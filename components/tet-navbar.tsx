@@ -9,8 +9,8 @@ const links = [
   { href: "/", label: "Trang chủ" },
   { href: "/van-khan", label: "Văn khấn" },
   { href: "/cau-chuc-tet", label: "Câu chúc" },
-  { href: "/lich-van-nien", label: "Lịch âm" },
-  { href: "/blogs", label: "Hiểu tết" },
+  { href: "/lich-van-nien", label: "Lịch vạn niên" },
+  { href: "/hieu-tet", label: "Hiểu tết" },
   { href: "/loc-tet", label: "Lộc tết" },
 ]
 
