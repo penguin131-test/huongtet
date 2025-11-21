@@ -10,11 +10,11 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Hóng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
+  title: "Huơng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
   description:
-    "Hóng Tết - Đếm ngược Tết Nguyên Đán, xem lịch âm dương chính xác, lịch nghỉ Tết, câu chúc, món ăn, văn khấn và tiện ích Tết Việt. Gọn nhẹ, miễn phí, không cần cài app.",
+    "Huơng Tết - Đếm ngược Tết Nguyên Đán, xem lịch âm dương chính xác, lịch nghỉ Tết, câu chúc, món ăn, văn khấn và tiện ích Tết Việt. Gọn nhẹ, miễn phí, không cần cài app.",
   openGraph: {
-    title: "Hóng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
+    title: "Huơng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
     description: "Còn bao nhiêu ngày nữa đến Tết? Xem lịch, câu chúc, món ăn, và tiện ích Tết Việt.",
     type: "website",
   },
