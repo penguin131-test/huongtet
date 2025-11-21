@@ -30,7 +30,7 @@ export function TetNavbar() {
           href="/"
           className="flex items-baseline gap-1 text-base font-bold tracking-wide text-red-800"
         >
-          <span>Hóng Tết</span>
+          <span>Hương Tết</span>
           <span className="text-[11px] font-medium text-red-700/70">
             Đếm ngược & tiện ích
           </span>
