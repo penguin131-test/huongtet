@@ -21,18 +21,16 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "https://files.catbox.moe/kntzs7.png",
+        url: "https://files.catbox.moe/d468n1.ico",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "https://files.catbox.moe/kntzs7.png",
+        url: "https://files.catbox.moe/d468n1.ico",
         media: "(prefers-color-scheme: dark)",
       },
     ],
-    apple: "https://files.catbox.moe/kntzs7.png",
+    apple: "https://files.catbox.moe/pyzi0r.png",
   },
-  manifest: "/manifest.json",
-    generator: 'v0.app'
 }
 
 export default function RootLayout({
