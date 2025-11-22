@@ -4,25 +4,32 @@ import Link from "next/link"
 
 const holidaySchedules = [
   {
+    year: 2024,
+    tetStart: "2024-02-08",
+    tetEnd: "2024-02-14",
+    days: 7,
+    note: "Tết Nguyên Đán năm Giáp Thìn",
+  },
+  {
     year: 2025,
-    tetStart: "2025-02-28",
-    tetEnd: "2025-03-02",
-    days: 4,
+    tetStart: "2025-01-25",
+    tetEnd: "2025-02-02",
+    days: 8,
     note: "Tết Nguyên Đán năm Ất Tỵ",
   },
   {
     year: 2026,
-    tetStart: "2026-02-17",
-    tetEnd: "2026-02-21",
-    days: 5,
-    note: "Tết Nguyên Đán năm Bính Thân",
+    tetStart: "2026-02-14",
+    tetEnd: "2026-02-22",
+    days: 9,
+    note: "Tết Nguyên Đán năm Bính Ngọ",
   },
   {
-    year: 2024,
-    tetStart: "2024-02-10",
-    tetEnd: "2024-02-13",
-    days: 4,
-    note: "Tết Nguyên Đán năm Giáp Thìn",
+    year: 2027,
+    tetStart: "Đang cập nhật...",
+    tetEnd: "Đang cập nhật...",
+    days: "Đang cập nhật",
+    note: "Tết Nguyên Đán năm Đinh Mùi",
   },
 ]
 

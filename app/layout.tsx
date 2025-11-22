@@ -42,8 +42,7 @@ export default function RootLayout({
     <html lang="vi">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        {/* Noel đỏ đậm */}
-        <meta name="theme-color" content="#BB2528" />
+        <meta name="theme-color" content="#D32F2F" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
