@@ -31,7 +31,6 @@ export const metadata: Metadata = {
     ],
     apple: "https://files.catbox.moe/pyzi0r.png",
   },
-    generator: 'v0.app'
 }
 
 export default function RootLayout({
