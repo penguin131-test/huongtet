@@ -93,49 +93,32 @@ export function CountdownHero() {
 
   return (
     <>
-      {/* Nền hero Noel: xanh lá + nhấn đỏ */}
-      <section className="border-b border-[#146B3A] bg-gradient-to-b from-[#146B3A] via-[#0b1f1a] to-[#0b1f1a]">
+      <section className="border-b border-amber-300/70 bg-gradient-to-b from-[#fffaf0] via-[#ffeede] to-[#ffe0cc]">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pb-8 pt-10 md:flex-row md:items-center md:justify-between md:pb-10 md:pt-12">
           {/* Text */}
           <div className="max-w-xl space-y-3">
-            <p className="inline-block rounded-full border border-[#BB2528] bg-white/90 px-3 py-1 text-xs font-semibold tracking-[0.16em] uppercase"
-               style={{ color: "#BB2528" }}>
+            <p className="inline-block rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.16em] uppercase text-red-700">
               Đếm ngược Tết Nguyên Đán
             </p>
-
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl"
-                style={{ color: "#ffffff" }}>
+            <h1 className="text-3xl font-extrabold tracking-tight text-red-900 sm:text-4xl md:text-5xl">
               Còn bao nhiêu ngày nữa đến Tết {targetYear}?
             </h1>
-
-            <p className="text-sm md:text-base"
-               style={{ color: "rgba(255,255,255,0.85)" }}>
+            <p className="text-sm md:text-base text-red-800/80">
               Trang web đếm ngược tới Tết Nguyên Đán. Ngày Tết Nguyên Đán vào ngày:{" "}
-              <span className="font-semibold" style={{ color: "#ffdfdf" }}>
-                {formattedDate}
-              </span>.
+              <span className="font-semibold text-red-900">{formattedDate}</span>.
             </p>
 
             <div className="flex flex-wrap gap-3 pt-2">
               <Button
                 size="sm"
-                className="rounded-full text-xs font-semibold"
-                style={{
-                  backgroundColor: "#BB2528",
-                  color: "#ffffff",
-                }}
+                className="rounded-full bg-red-700 text-xs font-semibold text-amber-50 hover:bg-red-800"
               >
-                Xem lịch &amp; sự kiện Tết
+                Xem lịch & sự kiện Tết
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="rounded-full text-xs font-medium"
-                style={{
-                  borderColor: "rgba(255,255,255,0.7)",
-                  backgroundColor: "rgba(255,255,255,0.08)",
-                  color: "#ffffff",
-                }}
+                className="rounded-full border-amber-300 bg-white/70 text-xs font-medium text-red-800 hover:bg-amber-50"
               >
                 Khám phá tiện ích Tết
               </Button>
@@ -144,14 +127,8 @@ export function CountdownHero() {
 
           {/* Countdown blocks */}
           <div className="mt-2 w-full max-w-md md:mt-0">
-            <div className="rounded-3xl border bg-white/95 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
-                 style={{ borderColor: "#BB2528" }}>
-              <p
-                className="mb-2 text-xs font-medium uppercase tracking-[0.14em]"
-                style={{ color: "#BB2528" }}
-              >
-                Thời gian còn lại
-              </p>
+            <div className="rounded-3xl border border-amber-300 bg-white/90 p-4 shadow-[0_10px_30px_rgba(148,63,37,0.16)]">
+              <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-red-700">Thời gian còn lại</p>
               <div className="grid grid-cols-4 gap-2">
                 <CountdownItem label="Ngày" value={days} />
                 <CountdownItem label="Giờ" value={hours} />
@@ -171,26 +148,9 @@ export function CountdownHero() {
 function CountdownItem({ label, value }: { label: string; value: number }) {
   const v = value.toString().padStart(2, "0")
   return (
-    <div
-      className="flex flex-col items-center justify-center rounded-2xl px-2 py-2"
-      style={{
-        borderColor: "#146B3A",
-        borderWidth: 1,
-        backgroundColor: "#f2fff7",
-      }}
-    >
-      <div
-        className="text-lg font-bold tracking-widest"
-        style={{ color: "#146B3A" }}
-      >
-        {v}
-      </div>
-      <div
-        className="text-[11px] font-medium"
-        style={{ color: "#BB2528" }}
-      >
-        {label}
-      </div>
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-200 bg-[#fffaf0] px-2 py-2">
+      <div className="text-lg font-bold tracking-widest text-red-900">{v}</div>
+      <div className="text-[11px] font-medium text-red-700/80">{label}</div>
     </div>
   )
 }

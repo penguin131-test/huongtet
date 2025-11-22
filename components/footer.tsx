@@ -6,7 +6,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-bold text-foreground mb-4">Huơng Tết</h3>
+            <h3 className="font-bold text-foreground mb-4">Hóng Tết</h3>
             <p className="text-sm text-muted-foreground">
               Đếm ngược Tết, quản lý Tết và chia sẻ niềm vui Tết cùng gia đình và bạn bè.
             </p>
@@ -48,7 +48,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>Made with ❤️ cho mùa Tết Việt | © 2025 Huơng Tết (Nguyễn Hoàng Nam)</p>
+          <p>Made with ❤️ cho mùa Tết Việt | © 2025 Hóng Tết (Nguyễn Hoàng Nam)</p>
         </div>
       </div>
     </footer>
