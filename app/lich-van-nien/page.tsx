@@ -360,7 +360,7 @@ export default function PerpetualCalendar() {
   for (let i = 0; i < startDay; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
-  const zodiacYear = libraryReady ? getZodiacYearFromLib(selectedYear) : "..."
+  const zodiacYear = selectedLunarInfo ? selectedLunarInfo.yearName : "..."
   const weekNumber = getISOWeek(selectedDate)
   const dayOfYear = getDayOfYear(selectedDate)
   const dow = selectedDate.getDay()
