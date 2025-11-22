@@ -329,9 +329,7 @@ export default function PerpetualCalendar() {
     return null
   })()
 
-  const selectedLunarInfo = selectedDayData
-    ? getLunarDate(selectedDayData.date)
-    : null
+  const selectedLunarInfo = selectedDayData ? getLunarDate(selectedDayData.date) : null
 
   const lunarMonthLength: number | null = selectedDayData
     ? getLunarMonthLengthForDate(selectedDate)
@@ -362,15 +360,13 @@ export default function PerpetualCalendar() {
   for (let i = 0; i < startDay; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
-  const zodiacYear = libraryReady ? getZodiacYearFromLib(selectedYear) : "..."
+  const zodiacYear = selectedLunarInfo ? selectedLunarInfo.yearName : "..."
   const weekNumber = getISOWeek(selectedDate)
   const dayOfYear = getDayOfYear(selectedDate)
   const dow = selectedDate.getDay()
 
   const proverb =
-    PROVERBS.length > 0
-      ? PROVERBS[getDayOfYear(selectedDate) % PROVERBS.length]
-      : ""
+    PROVERBS.length > 0 ? PROVERBS[getDayOfYear(selectedDate) % PROVERBS.length] : ""
 
   const goToday = () => {
     const t = new Date()
@@ -425,23 +421,32 @@ export default function PerpetualCalendar() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 py-8">
+    <main className="min-h-screen noel-bg py-8">
       <div className="max-w-6xl mx-auto px-4">
-        <Card className="overflow-hidden shadow-xl border-0">
+        <Card className="overflow-hidden shadow-xl border border-[#146B3A] bg-white/95 rounded-3xl">
           <div className="grid md:grid-cols-[1.1fr,1.3fr] min-h-[520px]">
             {/* LEFT PANEL */}
-            <div className="relative bg-gradient-to-b from-sky-50 to-white border-r">
+            <div className="relative bg-gradient-to-b from-[#fef6f6] via-[#ffffff] to-[#f2fff7] border-r border-[#146B3A33]">
               <div className="px-8 pt-6 pb-6 flex flex-col h-full">
-                <div className="flex items-center justify-between border-b pb-4 mb-4">
+                <div className="flex items-center justify-between border-b border-[#146B3A22] pb-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-sky-700">
+                    <span
+                      className="text-sm font-semibold"
+                      style={{ color: "#BB2528" }}
+                    >
                       {monthNames[selectedDate.getMonth()]}
                     </span>
-                    <span className="text-2xl font-bold text-slate-900">
+                    <span
+                      className="text-2xl font-bold"
+                      style={{ color: "#146B3A" }}
+                    >
                       {selectedDate.getFullYear()}
                     </span>
                   </div>
-                  <div className="text-sm font-semibold text-sky-800">
+                  <div
+                    className="text-sm font-semibold"
+                    style={{ color: "#BB2528" }}
+                  >
                     {weekdayFull[dow]}
                   </div>
                 </div>
@@ -459,11 +464,10 @@ export default function PerpetualCalendar() {
                         : "outline"
                     }
                     className="rounded-full px-4 text-xs font-semibold"
-                    onClick={goToday}
                   >
                     HÔM NAY
                   </Button>
-                  <div className="text-right text-xs text-slate-500 space-y-0.5">
+                  <div className="text-right text-xs space-y-0.5" style={{ color: "#146B3A" }}>
                     <div>Tuần {weekNumber}</div>
                     <div>Ngày thứ {dayOfYear} trong năm</div>
                   </div>
@@ -472,48 +476,54 @@ export default function PerpetualCalendar() {
                 <div className="flex items-center justify-between mb-4">
                   <button
                     onClick={goPrevDay}
-                    className="text-slate-400 hover:text-slate-700 transition"
+                    className="text-sm px-2 py-1 rounded-full border border-transparent hover:border-[#146B3A33] hover:bg-[#f2fff7] transition"
+                    style={{ color: "#146B3A" }}
                   >
                     ‹
                   </button>
-                  <div className="text-7xl font-bold text-slate-900 leading-none">
+                  <div
+                    className="text-7xl font-bold leading-none"
+                    style={{ color: "#146B3A" }}
+                  >
                     {pad2(selectedDate.getDate())}
                   </div>
                   <button
                     onClick={goNextDay}
-                    className="text-slate-400 hover:text-slate-700 transition"
+                    className="text-sm px-2 py-1 rounded-full border border-transparent hover:border-[#146B3A33] hover:bg-[#f2fff7] transition"
+                    style={{ color: "#146B3A" }}
                   >
                     ›
                   </button>
                 </div>
 
-                <div className="mt-2 mb-4 border-l-4 border-slate-300 pl-3 text-xs text-slate-600 italic">
+                <div className="mt-2 mb-4 border-l-4 pl-3 text-xs italic"
+                     style={{ borderColor: "#BB2528", color: "#146B3A" }}>
                   “{proverb}”
-                  <div className="mt-1 text-[10px] not-italic text-slate-400">
+                  <div className="mt-1 text-[10px] not-italic" style={{ color: "#6b7f76" }}>
                     Ca dao, tục ngữ Việt Nam
                   </div>
                 </div>
 
-                <div className="mb-5 text-xs text-slate-600">
+                <div className="mb-5 text-xs" style={{ color: "#146B3A" }}>
                   <span className="font-semibold">Tiết khí:</span>{" "}
-                  <span className="text-sky-700">
+                  <span className="font-semibold" style={{ color: "#BB2528" }}>
                     {selectedLunarInfo?.solarTerm || "Không có dữ liệu tiết khí"}
                   </span>
                 </div>
 
-                <div className="mt-auto pt-4 border-t flex gap-6 items-end">
-                  <div className="text-xs text-slate-700 space-y-1">
+                <div className="mt-auto pt-4 border-t border-[#146B3A22] flex gap-6 items-end">
+                  <div className="text-xs space-y-1" style={{ color: "#146B3A" }}>
                     {selectedDayData ? (
                       <>
                         <div>
                           Ngày{" "}
-                          <span className="font-semibold">
+                          <span className="font-semibold" style={{ color: "#BB2528" }}>
                             {selectedDayData.canChi}
                           </span>
                         </div>
                         <div>
                           Âm lịch:{" "}
-                          <span className="font-semibold">
+                          <span className="font-semibold" style={{ color: "#BB2528" }}>
                             {pad2(selectedDayData.lunar.day)}/
                             {pad2(selectedDayData.lunar.month)}
                             {lunarMonthType && `(${lunarMonthType})`}/
@@ -521,9 +531,8 @@ export default function PerpetualCalendar() {
                           </span>
                         </div>
                         {lunarMonthType && lunarMonthLength && (
-                          <div className="text-[11px] text-slate-500">
-                            Tháng {pad2(selectedDayData.lunar.month)} có{" "}
-                            {lunarMonthLength} ngày –{" "}
+                          <div className="text-[11px]" style={{ color: "#6b7f76" }}>
+                            Tháng {pad2(selectedDayData.lunar.month)} có {lunarMonthLength} ngày –{" "}
                             {lunarMonthType === "Đ" ? "tháng đủ" : "tháng thiếu"}
                           </div>
                         )}
@@ -531,36 +540,37 @@ export default function PerpetualCalendar() {
                           <div className="pt-1">
                             {selectedDayData.holidays.map((h, idx) => (
                               <div key={idx} className="text-[11px]">
-                                <span className="font-semibold text-emerald-700">
+                                <span className="font-semibold" style={{ color: "#146B3A" }}>
                                   {h.name}
                                 </span>{" "}
                                 –{" "}
                                 <span>
-                                  {h.isOff
-                                    ? "Có nghỉ làm/học"
-                                    : "Không nghỉ chính thức"}
+                                  {h.isOff ? "Có nghỉ làm/học" : "Không nghỉ chính thức"}
                                 </span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-[11px] text-slate-400">
+                          <div className="text-[11px]" style={{ color: "#829187" }}>
                             Không trùng ngày lễ trong danh sách.
                           </div>
                         )}
                       </>
                     ) : (
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px]" style={{ color: "#829187" }}>
                         Đang tải thông tin ngày...
                       </div>
                     )}
                   </div>
 
                   <div className="ml-auto text-right">
-                    <div className="text-[11px] text-slate-500 mb-1">
+                    <div className="text-[11px] mb-1" style={{ color: "#6b7f76" }}>
                       Ngày âm
                     </div>
-                    <div className="text-4xl font-bold text-sky-700 leading-none">
+                    <div
+                      className="text-4xl font-bold leading-none"
+                      style={{ color: "#BB2528" }}
+                    >
                       {selectedDayData ? pad2(selectedDayData.lunar.day) : "--"}
                     </div>
                   </div>
@@ -572,7 +582,7 @@ export default function PerpetualCalendar() {
             <div className="bg-white">
               <div className="px-6 pt-4 pb-6 flex flex-col h-full">
                 <div className="mb-4">
-                  <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold text-slate-400 mb-2">
+                  <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold mb-2" style={{ color: "#6b7f76" }}>
                     {weekdayShortHeader.map((d) => (
                       <div key={d} className="py-1">
                         {d}
@@ -585,7 +595,7 @@ export default function PerpetualCalendar() {
                         return (
                           <div
                             key={idx}
-                            className="h-[60px] rounded-xl bg-slate-50"
+                            className="h-[60px] rounded-xl bg-[#f7faf9]"
                           />
                         )
                       }
@@ -595,16 +605,15 @@ export default function PerpetualCalendar() {
                         return (
                           <div
                             key={idx}
-                            className="h-[60px] rounded-xl border bg-white flex items-center justify-center text-sm text-slate-400"
+                            className="h-[60px] rounded-xl border bg-white flex items-center justify-center text-sm"
+                            style={{ color: "#6b7f76", borderColor: "#e2e8f0" }}
                           >
                             {day}
                           </div>
                         )
                       }
 
-                      const isSelected =
-                        data.date.toDateString() ===
-                        selectedDate.toDateString()
+                      const isSelected = data.date.toDateString() === selectedDate.toDateString()
                       const inTetRange = isTetHolidayRange(data.lunar)
                       const hasHoliday = data.holidays.length > 0
                       const isTodayCell = data.isToday
@@ -612,51 +621,85 @@ export default function PerpetualCalendar() {
                       let cellLunarMonthType: "Đ" | "T" | null = null
                       if (data.lunar.day === 1) {
                         const len = getLunarMonthLengthForDate(data.date)
-                        cellLunarMonthType =
-                          len === 30 ? "Đ" : len === 29 ? "T" : null
+                        cellLunarMonthType = len === 30 ? "Đ" : len === 29 ? "T" : null
                       }
 
                       let cellClass =
-                        "h-[60px] rounded-xl border text-sm flex flex-col items-center justify-center cursor-pointer transition bg-white text-slate-800 hover:bg-slate-50"
+                        "h-[60px] rounded-xl border text-sm flex flex-col items-center justify-center cursor-pointer transition bg-white"
+
+                      let cellStyle: React.CSSProperties = {
+                        color: "#1f2933",
+                        borderColor: "#e2e8f0",
+                      }
 
                       if (inTetRange) {
                         cellClass =
-                          "h-[60px] rounded-xl border-2 border-red-500 bg-gradient-to-br from-red-500 to-amber-400 text-white shadow-md flex flex-col items-center justify-center cursor-pointer"
+                          "h-[60px] rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer shadow-md"
+                        cellStyle = {
+                          borderColor: "#BB2528",
+                          background:
+                            "linear-gradient(135deg, #BB2528, #facc6b)",
+                          color: "#ffffff",
+                        }
                       }
 
                       if (!inTetRange && hasHoliday) {
                         const anyOff = data.holidays.some((h) => h.isOff)
-                        const hasAm = data.holidays.some(
-                          (h) => h.type === "am"
-                        )
+                        const hasAm = data.holidays.some((h) => h.type === "am")
                         if (anyOff && hasAm) {
                           cellClass =
-                            "h-[60px] rounded-xl border-2 border-amber-500 bg-gradient-to-br from-amber-100 to-emerald-100 text-emerald-900 shadow-sm flex flex-col items-center justify-center cursor-pointer"
+                            "h-[60px] rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer shadow-sm"
+                          cellStyle = {
+                            borderColor: "#f59e0b",
+                            background:
+                              "linear-gradient(135deg, #fef3c7, #dcfce7)",
+                            color: "#14532d",
+                          }
                         } else if (anyOff) {
                           cellClass =
-                            "h-[60px] rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 flex flex-col items-center justify-center cursor-pointer"
+                            "h-[60px] rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer"
+                          cellStyle = {
+                            borderColor: "#16a34a",
+                            backgroundColor: "#ecfdf3",
+                            color: "#14532d",
+                          }
                         } else if (hasAm) {
                           cellClass =
-                            "h-[60px] rounded-xl border border-amber-400 bg-amber-50 text-amber-900 flex flex-col items-center justify-center cursor-pointer"
+                            "h-[60px] rounded-xl border flex flex-col items-center justify-center cursor-pointer"
+                          cellStyle = {
+                            borderColor: "#fbbf24",
+                            backgroundColor: "#fffbeb",
+                            color: "#92400e",
+                          }
                         } else {
                           cellClass =
-                            "h-[60px] rounded-xl border border-sky-400 bg-sky-50 text-sky-900 flex flex-col items-center justify-center cursor-pointer"
+                            "h-[60px] rounded-xl border flex flex-col items-center justify-center cursor-pointer"
+                          cellStyle = {
+                            borderColor: "#38bdf8",
+                            backgroundColor: "#e0f2fe",
+                            color: "#0c4a6e",
+                          }
                         }
                       }
 
                       if (isSelected) {
                         cellClass =
-                          "h-[60px] rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white flex flex-col items-center justify-center cursor-pointer shadow-md"
+                          "h-[60px] rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer shadow-md"
+                        cellStyle = {
+                          borderColor: "#146B3A",
+                          backgroundColor: "#146B3A",
+                          color: "#ffffff",
+                        }
                       }
 
-                      if (
-                        isTodayCell &&
-                        !isSelected &&
-                        !inTetRange &&
-                        !hasHoliday
-                      ) {
+                      if (isTodayCell && !isSelected && !inTetRange && !hasHoliday) {
                         cellClass =
-                          "h-[60px] rounded-xl border-2 border-sky-500 bg-sky-50 text-sky-900 flex flex-col items-center justify-center cursor-pointer"
+                          "h-[60px] rounded-xl border-2 flex flex-col items-center justify-center cursor-pointer"
+                        cellStyle = {
+                          borderColor: "#0ea5e9",
+                          backgroundColor: "#e0f2fe",
+                          color: "#0c4a6e",
+                        }
                       }
 
                       return (
@@ -664,6 +707,7 @@ export default function PerpetualCalendar() {
                           key={idx}
                           onClick={() => handleDayClick(day)}
                           className={cellClass}
+                          style={cellStyle}
                         >
                           <div className="text-sm font-semibold leading-none">
                             {day}
@@ -687,23 +731,25 @@ export default function PerpetualCalendar() {
                   </div>
                 </div>
 
-                <div className="mt-auto pt-3 border-t flex flex-wrap gap-4 items-center justify-between">
+                <div className="mt-auto pt-3 border-t border-[#e2e8f0] flex flex-wrap gap-4 items-center justify-between">
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-500">THÁNG</span>
-                      <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
+                      <span style={{ color: "#6b7f76" }}>THÁNG</span>
+                      <div className="inline-flex items-center rounded-full border bg-[#f7faf9] px-1 border-[#d1e0d7]">
                         <button
                           onClick={() => shiftMonth(-1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                          className="px-2 py-1 text-xs rounded-full hover:bg-[#e2f3ea]"
+                          style={{ color: "#146B3A" }}
                         >
                           ‹
                         </button>
-                        <span className="px-3 text-sm font-semibold">
+                        <span className="px-3 text-sm font-semibold" style={{ color: "#146B3A" }}>
                           {pad2(selectedMonth)}
                         </span>
                         <button
                           onClick={() => shiftMonth(1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                          className="px-2 py-1 text-xs rounded-full hover:bg-[#e2f3ea]"
+                          style={{ color: "#146B3A" }}
                         >
                           ›
                         </button>
@@ -711,20 +757,22 @@ export default function PerpetualCalendar() {
                     </div>
 
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-500">NĂM</span>
-                      <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
+                      <span style={{ color: "#6b7f76" }}>NĂM</span>
+                      <div className="inline-flex items-center rounded-full border bg-[#f7faf9] px-1 border-[#d1e0d7]">
                         <button
                           onClick={() => shiftYear(-1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                          className="px-2 py-1 text-xs rounded-full hover:bg-[#e2f3ea]"
+                          style={{ color: "#146B3A" }}
                         >
                           ‹
                         </button>
-                        <span className="px-3 text-sm font-semibold">
+                        <span className="px-3 text-sm font-semibold" style={{ color: "#146B3A" }}>
                           {selectedYear}
                         </span>
                         <button
                           onClick={() => shiftYear(1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                          className="px-2 py-1 text-xs rounded-full hover:bg-[#e2f3ea]"
+                          style={{ color: "#146B3A" }}
                         >
                           ›
                         </button>
@@ -732,9 +780,9 @@ export default function PerpetualCalendar() {
                     </div>
                   </div>
 
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs" style={{ color: "#6b7f76" }}>
                     Năm con giáp:{" "}
-                    <span className="font-semibold text-sky-700">
+                    <span className="font-semibold" style={{ color: "#BB2528" }}>
                       {zodiacYear}
                     </span>
                   </div>
