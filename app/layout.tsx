@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     ],
     apple: "https://files.catbox.moe/pyzi0r.png",
   },
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -42,7 +43,8 @@ export default function RootLayout({
     <html lang="vi">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#D32F2F" />
+        {/* Noel đỏ đậm */}
+        <meta name="theme-color" content="#BB2528" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

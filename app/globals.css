@@ -4,75 +4,96 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color scheme to Vietnamese Tet theme: red, yellow, cream */
-  --background: oklch(0.98 0 0);
-  --foreground: oklch(0.1 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.1 0 0);
-  --primary: oklch(0.45 0.2 10);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.75 0.15 50);
-  --secondary-foreground: oklch(0.1 0 0);
-  --muted: oklch(0.92 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.75 0.15 50);
-  --accent-foreground: oklch(0.1 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.45 0.2 10);
-  --chart-1: oklch(0.45 0.2 10);
-  --chart-2: oklch(0.75 0.15 50);
-  --chart-3: oklch(0.55 0.15 30);
-  --chart-4: oklch(0.65 0.12 80);
-  --chart-5: oklch(0.7 0.1 60);
+  /* Noel palette: đỏ #BB2528, xanh #146B3A, trắng #ffffff */
+  --background: #0b1f1a;
+  --foreground: #ffffff;
+
+  --card: #122c23;
+  --card-foreground: #ffffff;
+
+  --popover: #122c23;
+  --popover-foreground: #ffffff;
+
+  --primary: #BB2528;
+  --primary-foreground: #ffffff;
+
+  --secondary: #146B3A;
+  --secondary-foreground: #ffffff;
+
+  --muted: #1a3b30;
+  --muted-foreground: #e2f7ee;
+
+  --accent: #ffffff;
+  --accent-foreground: #BB2528;
+
+  --destructive: #BB2528;
+  --destructive-foreground: #ffffff;
+
+  --border: #214d3d;
+  --input: #214d3d;
+  --ring: #BB2528;
+
+  --chart-1: #BB2528;
+  --chart-2: #146B3A;
+  --chart-3: #ffffff;
+  --chart-4: #f5b2b4;
+  --chart-5: #7fd3a5;
+
   --radius: 0.75rem;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.1 0 0);
-  --sidebar-primary: oklch(0.45 0.2 10);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.75 0.15 50);
-  --sidebar-accent-foreground: oklch(0.1 0 0);
-  --sidebar-border: oklch(0.92 0 0);
-  --sidebar-ring: oklch(0.45 0.2 10);
+
+  --sidebar: #0f241e;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #BB2528;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #146B3A;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #214d3d;
+  --sidebar-ring: #BB2528;
 }
 
 .dark {
-  --background: oklch(0.12 0 0);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.15 0 0);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.15 0 0);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.65 0.18 10);
-  --primary-foreground: oklch(0.95 0 0);
-  --secondary: oklch(0.8 0.15 50);
-  --secondary-foreground: oklch(0.1 0 0);
-  --muted: oklch(0.3 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.8 0.15 50);
-  --accent-foreground: oklch(0.1 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.25 0 0);
-  --ring: oklch(0.65 0.18 10);
-  --chart-1: oklch(0.65 0.18 10);
-  --chart-2: oklch(0.8 0.15 50);
-  --chart-3: oklch(0.7 0.12 30);
-  --chart-4: oklch(0.75 0.12 80);
-  --chart-5: oklch(0.78 0.1 60);
-  --sidebar: oklch(0.15 0 0);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.65 0.18 10);
-  --sidebar-primary-foreground: oklch(0.95 0 0);
-  --sidebar-accent: oklch(0.8 0.15 50);
-  --sidebar-accent-foreground: oklch(0.1 0 0);
-  --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.65 0.18 10);
+  --background: #050d0a;
+  --foreground: #f8fafc;
+
+  --card: #0b1a14;
+  --card-foreground: #f8fafc;
+
+  --popover: #0b1a14;
+  --popover-foreground: #f8fafc;
+
+  --primary: #ff4a52;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1c7b4a;
+  --secondary-foreground: #e5f9f0;
+
+  --muted: #0f241e;
+  --muted-foreground: #a0b8b0;
+
+  --accent: #ffffff;
+  --accent-foreground: #ff4a52;
+
+  --destructive: #ff4a52;
+  --destructive-foreground: #ffffff;
+
+  --border: #1b3b30;
+  --input: #1b3b30;
+  --ring: #ff4a52;
+
+  --chart-1: #ff4a52;
+  --chart-2: #1c7b4a;
+  --chart-3: #e5f9f0;
+  --chart-4: #f97373;
+  --chart-5: #7fd3a5;
+
+  --sidebar: #050d0a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #ff4a52;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c7b4a;
+  --sidebar-accent-foreground: #e5f9f0;
+  --sidebar-border: #1b3b30;
+  --sidebar-ring: #ff4a52;
 }
 
 @theme inline {
@@ -118,14 +139,30 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* bỏ border-border, dùng CSS thường */
+    @apply outline-ring/50;
+    border-color: var(--border);
   }
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* Tet-specific animations */
+/* Nền gradient Noel */
+.noel-bg {
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 60%),
+    radial-gradient(circle at bottom, rgba(187, 37, 40, 0.35), transparent 55%),
+    linear-gradient(to bottom, #0b1f1a, #146B3A 45%, #0b1f1a 90%);
+}
+
+/* Tầng tuyết rơi */
+.snow-layer {
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Animations */
 @keyframes shimmer {
   0%,
   100% {
@@ -173,4 +210,72 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Tuyết rơi ❄ */
+.snowflake {
+  position: absolute;
+  top: -10vh;
+  color: #ffffff;
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.9),
+    0 0 10px rgba(255, 255, 255, 0.7);
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Trang trí Noel */
+@keyframes noel-swing {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(6px) rotate(2deg);
+  }
+}
+
+@keyframes noel-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes noel-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(4px);
+  }
+}
+
+.noel-deco-swing {
+  transform-origin: top center;
+  animation: noel-swing 3.8s ease-in-out infinite;
+}
+
+.noel-deco-float {
+  animation: noel-float 5s ease-in-out infinite;
+}
+
+.noel-deco-float-slow {
+  animation: noel-float 7s ease-in-out infinite;
+}
+
+.noel-deco-bounce {
+  animation: noel-bounce 2.8s ease-out infinite;
+}
+
+.noel-deco-glow {
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6));
 }

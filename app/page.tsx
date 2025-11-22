@@ -148,24 +148,24 @@ function PinnedNextHolidayClock() {
 
     return (
       <div className="fixed inset-x-4 bottom-4 z-40 max-w-sm sm:inset-x-auto sm:right-6 sm:bottom-6">
-        <div className="flex items-center gap-3 rounded-3xl border border-amber-300 bg-white/95 px-4 py-3 shadow-[0_12px_30px_rgba(148,63,37,0.25)] backdrop-blur-sm">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300 bg-[#fff7e6] text-[11px] font-semibold text-red-800">
+        <div className="flex items-center gap-3 rounded-3xl border border-emerald-300 bg-white/95 px-4 py-3 shadow-[0_12px_30px_rgba(8,47,35,0.45)] backdrop-blur-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-300 bg-[#e8fff4] text-[11px] font-semibold text-[#BB2528]">
             Lễ
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-red-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#BB2528]">
                 Hôm nay là ngày lễ
               </p>
-              <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] text-red-700">
+              <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] text-[#BB2528]">
                 Đồng hồ phụ
               </span>
             </div>
-            <p className="mt-1 truncate text-sm font-semibold text-red-900">
+            <p className="mt-1 truncate text-sm font-semibold text-[#BB2528]">
               {todayHoliday.name}
             </p>
-            <p className="text-xs text-red-700/80">{dateLabel}</p>
-            <p className="mt-1 text-xs text-red-800/90">{wish}</p>
+            <p className="text-xs text-red-50/90">{dateLabel}</p>
+            <p className="mt-1 text-xs text-white/90">{wish}</p>
           </div>
         </div>
       </div>
@@ -181,41 +181,41 @@ function PinnedNextHolidayClock() {
 
   return (
     <div className="fixed inset-x-4 bottom-4 z-40 max-w-sm sm:inset-x-auto sm:right-6 sm:bottom-6">
-      <div className="flex items-center gap-3 rounded-3xl border border-amber-300 bg-white/95 px-4 py-3 shadow-[0_12px_30px_rgba(148,63,37,0.25)] backdrop-blur-sm">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300 bg-[#fff7e6] text-xs font-semibold text-red-800">
+      <div className="flex items-center gap-3 rounded-3xl border border-emerald-300 bg-white/95 px-4 py-3 shadow-[0_12px_30px_rgba(8,47,35,0.45)] backdrop-blur-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-300 bg-[#e8fff4] text-xs font-semibold text-[#BB2528]">
           Tết
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-red-700">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#BB2528]">
               Ngày lễ gần nhất
             </p>
-            <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] text-red-700">
+            <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] text-[#BB2528]">
               Đồng hồ phụ
             </span>
           </div>
-          <p className="mt-1 truncate text-sm font-semibold text-red-900">
+          <p className="mt-1 truncate text-sm font-semibold text-[#BB2528]">
             {nextHoliday.name}
           </p>
-          <p className="text-xs text-red-700/80">
+          <p className="text-xs text-slate-700/90">
             {dateLabel} ·{" "}
-            <span className="font-semibold text-red-800">
+            <span className="font-semibold text-[#BB2528]">
               Còn {timeLeft.days} ngày nữa
             </span>
           </p>
 
           {/* Đồng hồ countdown nhỏ */}
-          <div className="mt-2 flex gap-1 text-[11px] font-mono text-red-800">
-            <div className="min-w-[3ch] rounded-md border border-amber-200 bg-[#fff7e6] px-1.5 py-0.5 text-center">
+          <div className="mt-2 flex gap-1 text-[11px] font-mono text-[#BB2528]">
+            <div className="min-w-[3ch] rounded-md border border-emerald-200 bg-[#e8fff4] px-1.5 py-0.5 text-center">
               {timeLeft.days.toString().padStart(2, "0")}d
             </div>
-            <div className="min-w-[3ch] rounded-md border border-amber-200 bg-[#fff7e6] px-1.5 py-0.5 text-center">
+            <div className="min-w-[3ch] rounded-md border border-emerald-200 bg-[#e8fff4] px-1.5 py-0.5 text-center">
               {timeLeft.hours.toString().padStart(2, "0")}h
             </div>
-            <div className="min-w-[3ch] rounded-md border border-amber-200 bg-[#fff7e6] px-1.5 py-0.5 text-center">
+            <div className="min-w-[3ch] rounded-md border border-emerald-200 bg-[#e8fff4] px-1.5 py-0.5 text-center">
               {timeLeft.minutes.toString().padStart(2, "0")}m
             </div>
-            <div className="min-w-[3ch] rounded-md border border-amber-200 bg-[#fff7e6] px-1.5 py-0.5 text-center">
+            <div className="min-w-[3ch] rounded-md border border-emerald-200 bg-[#e8fff4] px-1.5 py-0.5 text-center">
               {timeLeft.seconds.toString().padStart(2, "0")}s
             </div>
           </div>
@@ -225,22 +225,102 @@ function PinnedNextHolidayClock() {
   )
 }
 
-export default function Home() {
-  return (
-    <main className="relative min-h-screen bg-gradient-to-b from-[#fff7e6] via-[#ffe9d6] to-[#ffd2b3]">
-      <CountdownHero />
+type Snowflake = {
+  id: number
+  left: number
+  delay: number
+  duration: number
+  size: number
+  opacity: number
+}
 
-      <div className="mx-auto max-w-6xl space-y-12 px-4 py-8">
-        <EventClocks />
-        <TodayOverview />
-        <QuickLinks />
-        <GamificationPreview />
-        <CultureSnippets />
+const SNOWFLAKE_COUNT = 80
+
+export default function Home() {
+  const [snowflakes, setSnowflakes] = useState<Snowflake[]>([])
+
+  useEffect(() => {
+    const flakes: Snowflake[] = Array.from({ length: SNOWFLAKE_COUNT }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 10,
+      duration: 10 + Math.random() * 10,
+      size: 8 + Math.random() * 10,
+      opacity: 0.3 + Math.random() * 0.5,
+    }))
+    setSnowflakes(flakes)
+  }, [])
+
+  return (
+    <main className="relative min-h-screen noel-bg overflow-hidden">
+      {/* Tầng tuyết rơi */}
+      <div className="pointer-events-none fixed inset-0 z-10 snow-layer">
+        {snowflakes.map((flake) => (
+          <span
+            key={flake.id}
+            className="snowflake"
+            style={{
+              left: `${flake.left}%`,
+              animationDuration: `${flake.duration}s`,
+              animationDelay: `${flake.delay}s`,
+              fontSize: `${flake.size}px`,
+              opacity: flake.opacity,
+            }}
+          >
+            ❄
+          </span>
+        ))}
       </div>
 
-      <PinnedNextHolidayClock />
+      {/* Trang trí Noel */}
+      <div className="pointer-events-none absolute inset-x-0 top-4 z-20 flex justify-center">
+        <img
+          src="/noel/socks.png"
+          alt="Tất Noel dễ thương"
+          className="h-24 sm:h-28 md:h-32 noel-deco-swing noel-deco-glow"
+        />
+      </div>
 
-      <Footer />
+      <div className="pointer-events-none absolute bottom-4 left-2 z-20 hidden sm:block">
+        <img
+          src="/noel/tree.png"
+          alt="Cây thông Noel"
+          className="h-32 md:h-40 noel-deco-float noel-deco-glow"
+        />
+      </div>
+
+      <div className="pointer-events-none absolute bottom-3 right-3 z-20 hidden sm:block">
+        <img
+          src="/noel/santa.png"
+          alt="Ông già Noel"
+          className="h-28 md:h-36 noel-deco-float-slow noel-deco-glow"
+        />
+      </div>
+
+      <div className="pointer-events-none absolute top-[30%] right-2 z-20 hidden md:block">
+        <img
+          src="/noel/penguin.png"
+          alt="Penguin Noel"
+          className="h-24 noel-deco-bounce noel-deco-glow"
+        />
+      </div>
+
+      {/* Nội dung chính */}
+      <div className="relative z-30">
+        <CountdownHero />
+
+        <div className="mx-auto max-w-6xl space-y-12 px-4 py-8">
+          <EventClocks />
+          <TodayOverview />
+          <QuickLinks />
+          <GamificationPreview />
+          <CultureSnippets />
+        </div>
+
+        <PinnedNextHolidayClock />
+
+        <Footer />
+      </div>
     </main>
   )
 }
