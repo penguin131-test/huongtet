@@ -24,12 +24,10 @@ export function EventClocks() {
       const newCountdowns: Record<string, EventCountdown> = {}
 
       Object.entries(TET_EVENTS).forEach(([eventId, event]) => {
-        // Skip Tet since it's shown in main countdown
         if (eventId === "tet") return
 
         let eventDate = new Date(currentYear, event.solarDate.month - 1, event.solarDate.day)
 
-        // If event has passed this year, target next year
         if (eventDate < now) {
           eventDate = new Date(currentYear + 1, event.solarDate.month - 1, event.solarDate.day)
         }
@@ -62,8 +60,15 @@ export function EventClocks() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Các sự kiện khác - Năm {displayYear}</h2>
-        <p className="text-muted-foreground">Countdown cho những ngày lễ quan trọng khác</p>
+        {/* Title Noel */}
+        <h2 className="text-3xl font-bold" style={{ color: "#BB2528" }}>
+          Các sự kiện khác - Năm {displayYear}
+        </h2>
+
+        {/* Subtitle Noel */}
+        <p className="text-sm mt-1" style={{ color: "#146B3A" }}>
+          Countdown cho những ngày lễ quan trọng khác
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -88,9 +93,17 @@ export function EventClocks() {
             >
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-foreground">{event.name}</h3>
-                  <p className="text-sm text-muted-foreground">{event.description}</p>
+                  {/* Title Noel */}
+                  <h3 className="text-xl font-bold" style={{ color: "#BB2528" }}>
+                    {event.name}
+                  </h3>
+
+                  {/* Description Noel */}
+                  <p className="text-sm" style={{ color: "#146B3A" }}>
+                    {event.description}
+                  </p>
                 </div>
+
                 <span className="text-3xl">{event.emoji}</span>
               </div>
 
@@ -102,8 +115,21 @@ export function EventClocks() {
                   { value: countdown.seconds, label: "Giây" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">
-                    <div className="text-lg font-bold text-foreground">{String(item.value).padStart(2, "0")}</div>
-                    <div className="text-xs text-muted-foreground">{item.label}</div>
+                    {/* Number Noel */}
+                    <div
+                      className="text-lg font-bold"
+                      style={{ color: "#146B3A" }}
+                    >
+                      {String(item.value).padStart(2, "0")}
+                    </div>
+
+                    {/* Label Noel */}
+                    <div
+                      className="text-xs mt-0.5"
+                      style={{ color: "#BB2528" }}
+                    >
+                      {item.label}
+                    </div>
                   </div>
                 ))}
               </div>

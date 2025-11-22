@@ -22,17 +22,19 @@ export function TetNavbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href)
 
   return (
-    <header className="sticky top-0 z-50 border-b border-amber-300/70 bg-gradient-to-r from-[#fffaf0]/95 via-[#ffeede]/95 to-[#fff7e6]/95 backdrop-blur-sm">
+    <header
+      className={cn(
+        "sticky top-0 z-50 backdrop-blur-md border-b",
+        // Nền Noel: xanh đậm + nhấn đỏ
+        "border-[#146B3A]/80 bg-gradient-to-r from-[#0b1f1a]/95 via-[#146B3A]/95 to-[#0b1f1a]/95"
+      )}
+    >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5">
-        
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-baseline gap-1 text-base font-bold tracking-wide text-red-800"
-        >
-          <span>Hương Tết</span>
-          <span className="text-[11px] font-medium text-red-700/70">
-            Đếm ngược & tiện ích
+        <Link href="/" className="flex items-baseline gap-1 text-base font-bold tracking-wide">
+          <span className="text-white">Hương Tết</span>
+          <span className="text-[11px] font-medium" style={{ color: "#ffdfdf" }}>
+            Đếm ngược &amp; tiện ích
           </span>
         </Link>
 
@@ -44,9 +46,11 @@ export function TetNavbar() {
               href={link.href}
               className={cn(
                 "rounded-full px-3.5 py-1.5 text-sm font-medium border transition-all",
-                "border-transparent text-red-800/80 hover:border-amber-400 hover:bg-amber-50 hover:text-red-900",
+                // trạng thái bình thường
+                "border-transparent text-white/80 hover:border-white/60 hover:bg-white/10 hover:text-white",
+                // trạng thái active
                 isActive(link.href) &&
-                  "border-amber-400 bg-amber-50 text-red-900 shadow-sm"
+                  "border-white bg-white text-sm text-[#BB2528] shadow-sm"
               )}
             >
               {link.label}
@@ -60,32 +64,36 @@ export function TetNavbar() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Toggle menu"
-          className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] rounded-full border border-amber-300 bg-white/80 md:hidden"
+          className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] rounded-full border bg-white/90 md:hidden"
+          style={{ borderColor: "#BB2528" }}
         >
           <span
             className={cn(
-              "block h-[2px] w-5 bg-red-800 transition-all",
+              "block h-[2px] w-5 transition-all",
               open && "translate-y-[7px] rotate-45"
             )}
+            style={{ backgroundColor: "#BB2528" }}
           />
           <span
             className={cn(
-              "block h-[2px] w-5 bg-red-800 transition-all",
+              "block h-[2px] w-5 transition-all",
               open && "opacity-0"
             )}
+            style={{ backgroundColor: "#BB2528" }}
           />
           <span
             className={cn(
-              "block h-[2px] w-5 bg-red-800 transition-all",
+              "block h-[2px] w-5 transition-all",
               open && "-translate-y-[7px] -rotate-45"
             )}
+            style={{ backgroundColor: "#BB2528" }}
           />
         </button>
       </nav>
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-amber-200 bg-[#fffaf0]/95 md:hidden">
+        <div className="md:hidden border-t" style={{ borderColor: "#146B3A", backgroundColor: "rgba(11,31,26,0.96)" }}>
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-2">
             {links.map((link) => (
               <Link
@@ -94,9 +102,11 @@ export function TetNavbar() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "rounded-xl px-3 py-2 text-sm font-medium transition-all border",
-                  "border-transparent text-red-800/80 hover:bg-amber-50 hover:border-amber-300",
+                  // bình thường
+                  "border-transparent text-white/80 hover:bg-white/10 hover:border-white/40 hover:text-white",
+                  // active
                   isActive(link.href) &&
-                    "border-amber-400 bg-amber-50 text-red-900 shadow-sm"
+                    "border-white bg-white text-[#BB2528] shadow-sm"
                 )}
               >
                 {link.label}
