@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import {
-  getLunarDate,
-  getZodiacYear as getZodiacYearFromLib,
-  isToday,
-} from "@/lib/amlich-wrapper"
+import { getLunarDate, isToday } from "@/lib/amlich-wrapper"
+
+// ================== TYPES & HÀM PHỤ ==================
 
 type HolidayType = "duong" | "am"
 
@@ -82,6 +80,7 @@ const weekdayFull = [
   "THỨ BẢY",
 ]
 
+// Tuần ISO
 const getISOWeek = (d: Date) => {
   const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
   const dayNum = date.getUTCDay() || 7
@@ -90,13 +89,15 @@ const getISOWeek = (d: Date) => {
   return Math.ceil(((+date - +yearStart) / 86400000 + 1) / 7)
 }
 
+// Ngày thứ bao nhiêu trong năm
 const getDayOfYear = (d: Date) => {
   const start = new Date(d.getFullYear(), 0, 0)
   const diff = d.getTime() - start.getTime()
   return Math.floor(diff / (1000 * 60 * 60 * 24))
 }
 
-// Ca dao / tục ngữ
+// ================== CA DAO / TỤC NGỮ ==================
+
 const PROVERBS: string[] = [
   "Có công mài sắt, có ngày nên kim.",
   "Uống nước nhớ nguồn.",
@@ -158,6 +159,32 @@ const PROVERBS: string[] = [
   "Dục tốc bất đạt.",
   "Nước chảy đá mòn.",
 ]
+
+// ================== ICON CON GIÁP ==================
+
+const ZODIAC_ICONS: Record<string, { emoji: string; label: string }> = {
+  Tý: { emoji: "🐀", label: "Tý – Chuột" },
+  Sửu: { emoji: "🐂", label: "Sửu – Trâu" },
+  Dần: { emoji: "🐯", label: "Dần – Hổ" },
+  Mão: { emoji: "🐇", label: "Mão – Mèo" },
+  Thìn: { emoji: "🐉", label: "Thìn – Rồng" },
+  Tỵ: { emoji: "🐍", label: "Tỵ – Rắn" },
+  Ngọ: { emoji: "🐎", label: "Ngọ – Ngựa" },
+  Mùi: { emoji: "🐐", label: "Mùi – Dê" },
+  Thân: { emoji: "🐒", label: "Thân – Khỉ" },
+  Dậu: { emoji: "🐓", label: "Dậu – Gà" },
+  Tuất: { emoji: "🐕", label: "Tuất – Chó" },
+  Hợi: { emoji: "🐖", label: "Hợi – Lợn" },
+}
+
+const getZodiacFromYearName = (yearName?: string | null) => {
+  if (!yearName) return null
+  const parts = yearName.trim().split(/\s+/)
+  const branch = parts[parts.length - 1] // lấy chữ cuối cùng: Tý, Sửu, Dần...
+  return ZODIAC_ICONS[branch] ? { branch, ...ZODIAC_ICONS[branch] } : null
+}
+
+// ================== DANH SÁCH NGÀY LỄ ==================
 
 // DƯƠNG LỊCH
 const SOLAR_HOLIDAYS: HolidayDefinition[] = [
@@ -270,23 +297,26 @@ const LUNAR_HOLIDAYS: HolidayDefinition[] = [
   { day: 23, month: 12, name: "Tết Ông Công, Ông Táo", isOff: false },
 ]
 
-export default function PerpetualCalendar() {
+// ================== COMPONENT ==================
+
+export default function HomePage() {
   const now = new Date()
   const [selectedYear, setSelectedYear] = useState(now.getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1)
   const [selectedDate, setSelectedDate] = useState<Date>(now)
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([])
-  const [libraryReady] = useState(true)
 
+  // Build calendar data
   useEffect(() => {
     const days: CalendarDay[] = []
     const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate()
 
     for (let day = 1; day <= daysInMonth; day++) {
       const solarDate = new Date(selectedYear, selectedMonth - 1, day)
+
       const lunarInfo = getLunarDate(solarDate)
       const today = isToday(day, selectedMonth, selectedYear)
-      const canChi = lunarInfo.dayName
+      const canChi = lunarInfo.dayName // Can Chi NGÀY chuẩn
       const holidays: HolidayInfo[] = []
 
       SOLAR_HOLIDAYS.forEach((h) => {
@@ -318,6 +348,7 @@ export default function PerpetualCalendar() {
     setCalendarData(days)
   }, [selectedYear, selectedMonth])
 
+  // Info ngày đang chọn
   const selectedDayData: CalendarDay | null = (() => {
     if (!calendarData.length) return null
     if (
@@ -329,6 +360,7 @@ export default function PerpetualCalendar() {
     return null
   })()
 
+  // Thông tin âm lịch (Can Chi tháng/năm, tiết khí, giờ hoàng đạo)
   const selectedLunarInfo = selectedDayData
     ? getLunarDate(selectedDayData.date)
     : null
@@ -338,6 +370,11 @@ export default function PerpetualCalendar() {
     : null
   const lunarMonthType: "Đ" | "T" | null =
     lunarMonthLength === 30 ? "Đ" : lunarMonthLength === 29 ? "T" : null
+
+  const zodiacYearName = selectedLunarInfo?.yearName || "..."
+  const zodiacInfo = getZodiacFromYearName(zodiacYearName)
+
+  const luckyHours = selectedLunarInfo?.luckyHours ?? []
 
   const monthNames = [
     "THÁNG 01",
@@ -362,7 +399,6 @@ export default function PerpetualCalendar() {
   for (let i = 0; i < startDay; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
-  const zodiacYear = selectedLunarInfo ? selectedLunarInfo.yearName : "..."
   const weekNumber = getISOWeek(selectedDate)
   const dayOfYear = getDayOfYear(selectedDate)
   const dow = selectedDate.getDay()
@@ -372,6 +408,7 @@ export default function PerpetualCalendar() {
       ? PROVERBS[getDayOfYear(selectedDate) % PROVERBS.length]
       : ""
 
+  // Điều khiển
   const goToday = () => {
     const t = new Date()
     setSelectedYear(t.getFullYear())
@@ -432,6 +469,7 @@ export default function PerpetualCalendar() {
             {/* LEFT PANEL */}
             <div className="relative bg-gradient-to-b from-sky-50 to-white border-r">
               <div className="px-8 pt-6 pb-6 flex flex-col h-full">
+                {/* Header THÁNG / NĂM / THỨ */}
                 <div className="flex items-center justify-between border-b pb-4 mb-4">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold text-sky-700">
@@ -446,6 +484,7 @@ export default function PerpetualCalendar() {
                   </div>
                 </div>
 
+                {/* Nút HÔM NAY + Tuần / Ngày trong năm */}
                 <div className="flex items-center justify-between mb-4">
                   <Button
                     size="sm"
@@ -469,6 +508,7 @@ export default function PerpetualCalendar() {
                   </div>
                 </div>
 
+                {/* Số ngày to + mũi tên */}
                 <div className="flex items-center justify-between mb-4">
                   <button
                     onClick={goPrevDay}
@@ -487,6 +527,7 @@ export default function PerpetualCalendar() {
                   </button>
                 </div>
 
+                {/* Ca dao / tục ngữ */}
                 <div className="mt-2 mb-4 border-l-4 border-slate-300 pl-3 text-xs text-slate-600 italic">
                   “{proverb}”
                   <div className="mt-1 text-[10px] not-italic text-slate-400">
@@ -494,23 +535,73 @@ export default function PerpetualCalendar() {
                   </div>
                 </div>
 
-                <div className="mb-5 text-xs text-slate-600">
+                {/* Tiết khí */}
+                <div className="mb-3 text-xs text-slate-600">
                   <span className="font-semibold">Tiết khí:</span>{" "}
                   <span className="text-sky-700">
                     {selectedLunarInfo?.solarTerm || "Không có dữ liệu tiết khí"}
                   </span>
                 </div>
 
+                {/* THÔNG TIN CAN CHI + GIỜ HOÀNG ĐẠO */}
+                <div className="space-y-2 text-xs text-slate-700 mb-3">
+                  {selectedDayData && selectedLunarInfo ? (
+                    <>
+                      <div>
+                        Ngày{" "}
+                        <span className="font-semibold">
+                          {selectedLunarInfo.dayName}
+                        </span>
+                      </div>
+                      <div>
+                        Tháng{" "}
+                        <span className="font-semibold">
+                          {selectedLunarInfo.monthName}
+                        </span>
+                      </div>
+                      <div>
+                        Năm{" "}
+                        <span className="font-semibold">
+                          {selectedLunarInfo.yearName}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-[11px] text-slate-400">
+                      Đang tải thông tin Can Chi...
+                    </div>
+                  )}
+
+                  {/* Giờ hoàng đạo */}
+                  <div className="pt-1">
+                    <div className="font-semibold mb-1">
+                      Giờ hoàng đạo hôm nay:
+                    </div>
+                    {luckyHours.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {luckyHours.map((h) => (
+                          <span
+                            key={h}
+                            className="px-2 py-0.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px]"
+                          >
+                            {h}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[11px] text-slate-400">
+                        Thư viện chưa trả dữ liệu giờ hoàng đạo.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Ô thông tin âm lịch + con giáp */}
                 <div className="mt-auto pt-4 border-t flex gap-6 items-end">
+                  {/* Cột trái: Thông tin âm lịch + lễ */}
                   <div className="text-xs text-slate-700 space-y-1">
                     {selectedDayData ? (
                       <>
-                        <div>
-                          Ngày{" "}
-                          <span className="font-semibold">
-                            {selectedDayData.canChi}
-                          </span>
-                        </div>
                         <div>
                           Âm lịch:{" "}
                           <span className="font-semibold">
@@ -548,6 +639,25 @@ export default function PerpetualCalendar() {
                             Không trùng ngày lễ trong danh sách.
                           </div>
                         )}
+                        {/* Năm con giáp + icon */}
+                        <div className="pt-2 flex items-center gap-2">
+                          <span className="text-[11px] text-slate-500">
+                            Năm con giáp:
+                          </span>
+                          <span className="font-semibold text-sky-700">
+                            {zodiacYearName}
+                          </span>
+                          {zodiacInfo && (
+                            <span className="ml-2 flex flex-col items-center">
+                              <span className="text-2xl animate-bounce">
+                                {zodiacInfo.emoji}
+                              </span>
+                              <span className="text-[10px] text-slate-500 mt-0.5">
+                                {zodiacInfo.branch}
+                              </span>
+                            </span>
+                          )}
+                        </div>
                       </>
                     ) : (
                       <div className="text-[11px] text-slate-400">
@@ -556,6 +666,7 @@ export default function PerpetualCalendar() {
                     )}
                   </div>
 
+                  {/* Cột phải: Số âm lịch to */}
                   <div className="ml-auto text-right">
                     <div className="text-[11px] text-slate-500 mb-1">
                       Ngày âm
@@ -571,6 +682,7 @@ export default function PerpetualCalendar() {
             {/* RIGHT PANEL – LỊCH THÁNG */}
             <div className="bg-white">
               <div className="px-6 pt-4 pb-6 flex flex-col h-full">
+                {/* Lịch tháng */}
                 <div className="mb-4">
                   <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold text-slate-400 mb-2">
                     {weekdayShortHeader.map((d) => (
@@ -687,8 +799,10 @@ export default function PerpetualCalendar() {
                   </div>
                 </div>
 
+                {/* CHỌN THÁNG / NĂM */}
                 <div className="mt-auto pt-3 border-t flex flex-wrap gap-4 items-center justify-between">
                   <div className="flex flex-wrap items-center gap-4">
+                    {/* Tháng */}
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-slate-500">THÁNG</span>
                       <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
@@ -710,6 +824,7 @@ export default function PerpetualCalendar() {
                       </div>
                     </div>
 
+                    {/* Năm */}
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-slate-500">NĂM</span>
                       <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
@@ -735,7 +850,7 @@ export default function PerpetualCalendar() {
                   <div className="text-xs text-slate-500">
                     Năm con giáp:{" "}
                     <span className="font-semibold text-sky-700">
-                      {zodiacYear}
+                      {zodiacYearName}
                     </span>
                   </div>
                 </div>
