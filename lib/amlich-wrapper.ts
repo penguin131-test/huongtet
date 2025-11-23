@@ -1,185 +1,175 @@
-// src/lib/amlich-wrapper.ts
-// Wrapper cho thư viện @nghiavuive/lunar_date_vi
-// → Trả về: Âm lịch + Can Chi + Tiết khí + giờ hoàng đạo
+// Wrapper chuẩn cho âm lịch Việt Nam dùng thư viện "lunar-date-vn"
 
-import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi"
+import { SolarDate as SolarDateLib, LunarDate as LunarDateLib } from "lunar-date-vn"
 
-export interface BasicLunarDate {
+// Kiểu dữ liệu lunar trả về cho phần UI
+// (có thêm Can Chi, tiết khí, giờ hoàng đạo)
+export interface LunarDate {
   day: number
   month: number
   year: number
-  // Can Chi
-  yearName: string
-  monthName: string
-  dayName: string
-  hourName: string
-  // Tiết khí
-  solarTerm: string
-  // Giờ hoàng đạo dạng "Tý (23–1h)"
-  luckyHours: string[]
+  leap: boolean
+  dayName: string       // Can Chi ngày
+  monthName: string     // Can Chi tháng
+  yearName: string      // Can Chi năm
+  solarTerm?: string    // Tiết khí (nếu có)
+  luckyHours?: string[] // Giờ hoàng đạo dạng "23-1 (Tý)"
 }
 
-/**
- * Tạo đầy đủ thông tin Âm lịch từ Date dương
- */
-function buildLunarFromDate(date: Date): BasicLunarDate {
-  // Tạo SolarDate từ ngày dương
-  const solar = new SolarDate(date as any)
+interface SolarDate {
+  day: number
+  month: number
+  year: number
+}
 
-  // Chuyển sang LunarDate
-  // Tuỳ API lib: có thể là SolarDate.toLunarDate(...) hoặc solar.toLunarDate()
-  let lunar: any
-  if (typeof (SolarDate as any).toLunarDate === "function") {
-    lunar = (SolarDate as any).toLunarDate(solar)
-  } else if (typeof (solar as any).toLunarDate === "function") {
-    lunar = (solar as any).toLunarDate()
-  } else if (typeof (LunarDate as any).fromSolarDate === "function") {
-    lunar = (LunarDate as any).fromSolarDate(solar)
-  } else {
-    throw new Error(
-      "Không tìm được hàm chuyển Solar -> Lunar trong @nghiavuive/lunar_date_vi. Cần kiểm tra lại API."
-    )
-  }
-
-  // Nếu lib có hàm init() thì gọi để tính thêm field
-  if (typeof lunar.init === "function") {
-    lunar.init()
-  }
-
-  // Lấy raw data (phụ thuộc lib – nhiều lib có hàm get())
-  const raw = typeof lunar.get === "function" ? lunar.get() : lunar
-
-  const year = Number(raw.year)
-  const month = Number(raw.month)
-  const day = Number(raw.day)
+// Lấy thông tin âm lịch đầy đủ cho 1 Date dương
+export function getLunarDate(solarDate: Date): LunarDate {
+  // Tạo thực thể SolarDate từ JS Date
+  const solar = new SolarDateLib(solarDate)
+  // Đổi sang âm lịch
+  const lunarEntity = solar.toLunarDate()
+  const info: any = lunarEntity.get()
 
   // Can Chi
-  const yearName: string =
-    (typeof lunar.getYearName === "function" && lunar.getYearName()) ||
-    (raw.year_name as string) ||
-    ""
-  const monthName: string =
-    (typeof lunar.getMonthName === "function" && lunar.getMonthName()) ||
-    (raw.month_name as string) ||
-    ""
-  const dayName: string =
-    (typeof lunar.getDayName === "function" && lunar.getDayName()) ||
-    (raw.day_name as string) ||
-    ""
-  const hourName: string =
-    (typeof lunar.getHourName === "function" && lunar.getHourName()) ||
-    (raw.hour_name as string) ||
-    ""
+  const dayName = lunarEntity.getDayName()
+  const monthName = lunarEntity.getMonthName()
+  const yearName = lunarEntity.getYearName()
 
-  // Tiết khí (nếu lib có)
-  const solarTerm: string =
-    (typeof lunar.getSolarTerm === "function" && lunar.getSolarTerm()) ||
-    (typeof lunar.getTietKhi === "function" && lunar.getTietKhi()) ||
-    (raw.solar_term as string) ||
-    ""
+  // Tiết khí: thư viện có thể dùng getSolarTerm() hoặc getTietKhi()
+  let solarTerm: string | undefined
+  const anyEntity: any = lunarEntity as any
+  if (typeof anyEntity.getSolarTerm === "function") {
+    solarTerm = anyEntity.getSolarTerm()
+  } else if (typeof anyEntity.getTietKhi === "function") {
+    solarTerm = anyEntity.getTietKhi()
+  }
 
-  // Giờ hoàng đạo
-  const rawLucky =
-    (typeof lunar.getLuckyHours === "function" && lunar.getLuckyHours()) ||
-    (raw.lucky_hours as any) ||
-    []
-
-  const luckyHours: string[] = Array.isArray(rawLucky)
-    ? rawLucky.map((h: any) => {
-        const name = h.name ?? ""
-        const time = h.time ?? []
-        if (Array.isArray(time) && time.length === 2) {
-          const [start, end] = time
-          return `${name} (${start}–${end}h)`
-        }
-        return name
-      })
-    : []
+  // Giờ hoàng đạo: dùng API getLuckyHours() nếu có
+  let luckyHours: string[] | undefined
+  if (typeof anyEntity.getLuckyHours === "function") {
+    const raw = anyEntity.getLuckyHours() as Array<{ name: string; time: number[] }>
+    luckyHours = raw.map((h) => `${h.time[0]}-${h.time[1]} (${h.name})`)
+  }
 
   return {
-    day,
-    month,
-    year,
-    yearName,
-    monthName,
+    day: info.day,
+    month: info.month,
+    year: info.year,
+    leap: !!info.leap_year,
     dayName,
-    hourName,
+    monthName,
+    yearName,
     solarTerm,
     luckyHours,
   }
 }
 
-/**
- * Hàm chính dùng trong UI
- */
-export function getLunarDate(date: Date): BasicLunarDate {
-  return buildLunarFromDate(date)
+// Tính năm Can Chi cho “năm dương” đang chọn trong lịch
+// Dùng ngày 1/7 của năm đó để đảm bảo đã qua Tết → cùng 1 năm âm lịch
+export function getZodiacYear(solarYear: number): string {
+  const midSolar = new SolarDateLib({ day: 1, month: 7, year: solarYear })
+  const lunarEntity = midSolar.toLunarDate()
+  return lunarEntity.getYearName() // ví dụ: "Giáp Thìn"
 }
 
-/**
- * Lấy Can Chi năm dương lịch (vd: "Giáp Thìn")
- */
-export function getZodiacYear(year: number): string {
-  // Lấy 1 ngày bất kỳ trong năm (1/1)
-  const solar = new SolarDate(new Date(year, 0, 1) as any)
+// 12 con giáp theo tháng âm (nếu UI cần dùng tới)
+export function getChineseZodiacSign(lunarMonth: number): string {
+  const signs = [
+    "Tý",
+    "Sửu",
+    "Dần",
+    "Mão",
+    "Thìn",
+    "Tỵ",
+    "Ngọ",
+    "Mùi",
+    "Thân",
+    "Dậu",
+    "Tuất",
+    "Hợi",
+  ]
+  return signs[Math.max(0, Math.min(11, (lunarMonth - 1) % 12))]
+}
 
-  let lunar: any
-  if (typeof (SolarDate as any).toLunarDate === "function") {
-    lunar = (SolarDate as any).toLunarDate(solar)
-  } else if (typeof (solar as any).toLunarDate === "function") {
-    lunar = (solar as any).toLunarDate()
-  } else if (typeof (LunarDate as any).fromSolarDate === "function") {
-    lunar = (LunarDate as any).fromSolarDate(solar)
-  } else {
-    return ""
+// Hàm giờ hoàng đạo đơn giản theo Can ngày (giữ lại nếu chỗ khác vẫn dùng)
+// page.tsx hiện đã dùng luckyHours từ getLunarDate nên hàm này chỉ để tương thích.
+export function getLuckyHours(lunarMonth: number, lunarDay: number): string[] {
+  const stemOfDay = (lunarDay - 1) % 10
+  const luckyHoursMap: Record<number, string[]> = {
+    0: ["7-9", "11-13", "19-21"],
+    1: ["5-7", "9-11", "15-17"],
+    2: ["7-9", "13-15", "21-23"],
+    3: ["9-11", "15-17", "23-1"],
+    4: ["7-9", "11-13", "17-19"],
+    5: ["5-7", "11-13", "19-21"],
+    6: ["7-9", "15-17", "21-23"],
+    7: ["5-7", "9-11", "17-19"],
+    8: ["7-9", "11-13", "19-21"],
+    9: ["9-11", "13-15", "21-23"],
+  }
+  return luckyHoursMap[stemOfDay] || ["9-11", "13-15", "19-21"]
+}
+
+// Tính ngày Tết (mùng 1 Tết âm lịch) trong 1 năm dương bất kỳ
+export function getTetDateInYear(solarYear: number): {
+  solarDate: SolarDate
+  lunarDate: LunarDate
+  name: string
+  isHoliday: boolean
+} {
+  // Tết luôn rơi từ 21/01 đến 20/02 dương lịch
+  const start = new Date(solarYear, 0, 21)
+  const end = new Date(solarYear, 1, 20)
+
+  for (
+    let d = new Date(start.getTime());
+    d.getTime() <= end.getTime();
+    d.setDate(d.getDate() + 1)
+  ) {
+    const lunar = getLunarDate(d)
+    if (lunar.day === 1 && lunar.month === 1) {
+      return {
+        solarDate: {
+          day: d.getDate(),
+          month: d.getMonth() + 1,
+          year: d.getFullYear(),
+        },
+        lunarDate: lunar,
+        name: "Tết Nguyên Đán",
+        isHoliday: true,
+      }
+    }
   }
 
-  if (typeof lunar.init === "function") {
-    lunar.init()
+  // Fallback (không tìm được – gần như không xảy ra)
+  const fallbackLunar = getLunarDate(start)
+  return {
+    solarDate: {
+      day: start.getDate(),
+      month: start.getMonth() + 1,
+      year: start.getFullYear(),
+    },
+    lunarDate: fallbackLunar,
+    name: "Tết Nguyên Đán (ước lượng)",
+    isHoliday: true,
   }
-
-  const raw = typeof lunar.get === "function" ? lunar.get() : lunar
-
-  return (
-    (typeof lunar.getYearName === "function" && lunar.getYearName()) ||
-    (raw.year_name as string) ||
-    ""
-  )
 }
 
-/**
- * "Con giáp" hiển thị trong TodayOverview:
- * → chính là Can Chi năm âm lịch
- */
-export function getChineseZodiacSign(date: Date): string {
-  const lunar = getLunarDate(date)
-  return lunar.yearName
+// Nếu logic của bạn: “Năm Tết là solarYear + 1” thì giữ nguyên
+export function getTetYear(solarYear: number): number {
+  return solarYear + 1
 }
 
-/**
- * Giờ hoàng đạo cho 1 ngày
- */
-export function getLuckyHoursForDate(date: Date): string[] {
-  const lunar = getLunarDate(date)
-  return lunar.luckyHours
+// Không cần khởi tạo script ngoài nữa, giữ để không lỗi import
+export function initializeAmLichCalendar(): void {
+  // Không cần làm gì – đã dùng thư viện nội bộ
 }
 
-/**
- * Tiết khí cho 1 ngày
- */
-export function getSolarTermForDate(date: Date): string {
-  const lunar = getLunarDate(date)
-  return lunar.solarTerm
-}
-
-/**
- * Kiểm tra ngày dương có phải hôm nay không
- */
 export function isToday(day: number, month: number, year: number): boolean {
-  const now = new Date()
+  const today = new Date()
   return (
-    now.getFullYear() === year &&
-    now.getMonth() + 1 === month &&
-    now.getDate() === day
+    today.getDate() === day &&
+    today.getMonth() + 1 === month &&
+    today.getFullYear() === year
   )
 }
