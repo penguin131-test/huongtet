@@ -30,10 +30,28 @@ interface CalendarDay {
   holidays: HolidayInfo[]
 }
 
+interface PersonalEvent {
+  id: string
+  title: string
+  date: {
+    day: number
+    month: number
+    year: number
+  }
+}
+
+interface SolarTermInYear {
+  name: string
+  date: Date
+}
+
+type SeasonalEffect = "none" | "noel" | "tet" | "trungthu"
+
 const pad2 = (n: number) => (n < 10 ? `0${n}` : `${n}`)
 
 // Dải nghỉ Tết Nguyên Đán: 28/12 → 05/01 âm lịch
 const isTetHolidayRange = (lunar: { day: number; month: number }) => {
+  if (!lunar) return false
   if (lunar.month === 12 && lunar.day >= 28) return true
   if (lunar.month === 1 && lunar.day <= 5) return true
   return false
@@ -96,7 +114,7 @@ const getDayOfYear = (d: Date) => {
   return Math.floor(diff / (1000 * 60 * 60 * 24))
 }
 
-// ================== CA DAO / TỤC NGỮ ==================
+// ================== CA DAO / TỤC NGỮ & CHÚC TẾT ==================
 
 const PROVERBS: string[] = [
   "Có công mài sắt, có ngày nên kim.",
@@ -160,28 +178,39 @@ const PROVERBS: string[] = [
   "Nước chảy đá mòn.",
 ]
 
-// ================== ICON CON GIÁP ==================
+const TET_GREETINGS: string[] = [
+  "Chúc bạn năm mới an khang, thịnh vượng, vạn sự như ý! 🎉",
+  "Chúc một năm mới bình an, sức khỏe dồi dào, học hành tấn tới! 📚",
+  "Tết đến xuân về, chúc mọi điều tốt đẹp nhất sẽ đến với bạn! 🌸",
+  "Chúc bạn và gia đình một năm mới ấm no, hạnh phúc, tràn đầy tiếng cười! 🧧",
+  "Năm mới, chúc bạn mạnh mẽ, kiên trì và đạt được mọi mục tiêu đã đặt ra! 🚀",
+  "Chúc năm mới lộc vào như nước, tài đến bất ngờ, niềm vui ngập tràn! 💰",
+]
 
-const ZODIAC_ICONS: Record<string, { emoji: string; label: string }> = {
-  Tý: { emoji: "🐀", label: "Tý – Chuột" },
-  Sửu: { emoji: "🐂", label: "Sửu – Trâu" },
-  Dần: { emoji: "🐯", label: "Dần – Hổ" },
-  Mão: { emoji: "🐇", label: "Mão – Mèo" },
-  Thìn: { emoji: "🐉", label: "Thìn – Rồng" },
-  Tỵ: { emoji: "🐍", label: "Tỵ – Rắn" },
-  Ngọ: { emoji: "🐎", label: "Ngọ – Ngựa" },
-  Mùi: { emoji: "🐐", label: "Mùi – Dê" },
-  Thân: { emoji: "🐒", label: "Thân – Khỉ" },
-  Dậu: { emoji: "🐓", label: "Dậu – Gà" },
-  Tuất: { emoji: "🐕", label: "Tuất – Chó" },
-  Hợi: { emoji: "🐖", label: "Hợi – Lợn" },
+// ================== ẢNH CON GIÁP ==================
+
+const ZODIAC_IMAGES: Record<string, string> = {
+  Tý: "/zodiacs/ty.png",
+  Sửu: "/zodiacs/suu.png",
+  Dần: "/zodiacs/dan.png",
+  Mão: "/zodiacs/mao.png",
+  Thìn: "/zodiacs/thin.png",
+  Tỵ: "/zodiacs/ty_ran.png",
+  Ngọ: "/zodiacs/ngo.png",
+  Mùi: "/zodiacs/mui.png",
+  Thân: "/zodiacs/than.png",
+  Dậu: "/zodiacs/dau.png", // ảnh bạn gửi, nhớ đặt đúng đường dẫn
+  Tuất: "/zodiacs/tuat.png",
+  Hợi: "/zodiacs/hoi.png",
 }
 
 const getZodiacFromYearName = (yearName?: string | null) => {
   if (!yearName) return null
   const parts = yearName.trim().split(/\s+/)
-  const branch = parts[parts.length - 1] // lấy chữ cuối cùng: Tý, Sửu, Dần...
-  return ZODIAC_ICONS[branch] ? { branch, ...ZODIAC_ICONS[branch] } : null
+  const branch = parts[parts.length - 1] // Tý / Sửu / ...
+  const image = ZODIAC_IMAGES[branch]
+  if (!image) return null
+  return { branch, image }
 }
 
 // ================== DANH SÁCH NGÀY LỄ ==================
@@ -297,7 +326,134 @@ const LUNAR_HOLIDAYS: HolidayDefinition[] = [
   { day: 23, month: 12, name: "Tết Ông Công, Ông Táo", isOff: false },
 ]
 
-// ================== COMPONENT ==================
+// ================== GỢI Ý THEO NGÀY / TIẾT KHÍ ==================
+
+function getDailySuggestions(lunarDay: number, lunarMonth: number, solarTerm?: string) {
+  const suggestions: string[] = []
+
+  if (lunarDay <= 10) {
+    suggestions.push(
+      "Đầu tháng âm lịch – rất hợp để bắt đầu thói quen tốt hoặc kế hoạch nhỏ.",
+      "Dọn lại bàn học / góc làm việc, bỏ bớt giấy tờ cũ không cần thiết."
+    )
+  } else if (lunarDay <= 20) {
+    suggestions.push(
+      "Giữa tháng âm – thời điểm tốt để rà soát lại tiến độ học tập / công việc.",
+      "Hoàn thiện nốt các việc đang làm dở thay vì mở thêm việc mới."
+    )
+  } else {
+    suggestions.push(
+      "Cuối tháng âm – hợp để tổng kết nhẹ: xem lại việc đã làm, rút kinh nghiệm.",
+      "Sắp xếp file, tài liệu, dọn lại thư viện tài liệu / Google Drive cho gọn."
+    )
+  }
+
+  if (solarTerm) {
+    const lower = solarTerm.toLowerCase()
+    if (lower.includes("xuân")) {
+      suggestions.push("Tiết khí đang gần mùa xuân – ưu tiên chăm sức khỏe, ngủ đủ, ăn uống lành mạnh.")
+    } else if (lower.includes("hạ")) {
+      suggestions.push("Tiết khí mùa hạ – uống đủ nước, tránh thức khuya nhiều, hạn chế đồ ăn quá nóng.")
+    } else if (lower.includes("thu")) {
+      suggestions.push("Tiết khí mùa thu – phù hợp để ngồi lại suy nghĩ, chỉnh lại kế hoạch dài hạn.")
+    } else if (lower.includes("đông") || lower.includes("hàn")) {
+      suggestions.push("Thời tiết dễ lạnh – chú ý giữ ấm, hạn chế thức khuya, tăng vận động nhẹ trong phòng.")
+    }
+  }
+
+  return suggestions
+}
+
+// ================== HIỆU ỨNG THEO MÙA ==================
+
+function getSeasonalEffectForDate(
+  solar: Date,
+  lunar: ReturnType<typeof getLunarDate>
+): SeasonalEffect {
+  const month = solar.getMonth() + 1
+
+  // Noel: từ THÁNG 11 đến hết THÁNG 12 dương lịch đều có tuyết rơi
+  if (month === 11 || month === 12) {
+    return "noel"
+  }
+
+  // Tết âm: 23–30 tháng Chạp, + mùng 1–7 tháng Giêng
+  if (
+    (lunar.month === 12 && lunar.day >= 23) ||
+    (lunar.month === 1 && lunar.day <= 7)
+  ) {
+    return "tet"
+  }
+
+  // Trung Thu: 10–18/8 âm
+  if (lunar.month === 8 && lunar.day >= 10 && lunar.day <= 18) {
+    return "trungthu"
+  }
+
+  return "none"
+}
+
+const SeasonalEffects: React.FC<{ effect: SeasonalEffect }> = ({ effect }) => {
+  if (effect === "none") return null
+
+  const items = Array.from({ length: 24 })
+  let symbols: string[] = []
+  if (effect === "noel") {
+    symbols = ["❄", "❅", "❆"]
+  } else if (effect === "tet") {
+    symbols = ["🧧", "🎆", "🌸"]
+  } else if (effect === "trungthu") {
+    symbols = ["🏮", "🌕", "⭐"]
+  }
+
+  return (
+    <>
+      <style jsx global>{`
+        @keyframes fall-slow {
+          0% {
+            transform: translate3d(0, -10vh, 0) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate3d(0, 110vh, 0) rotate(360deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        {items.map((_, i) => {
+          const left = (i * 13 + (i % 5) * 7) % 100
+          const duration = 12 + (i % 5) * 2
+          const delay = (i % 10) * -1.2
+          const size = 20 + (i % 3) * 6
+          const symbol = symbols[i % symbols.length]
+
+          return (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                left: `${left}%`,
+                top: "-10%",
+                fontSize: `${size}px`,
+                animation: `fall-slow ${duration}s linear infinite`,
+                animationDelay: `${delay}s`,
+                opacity: 0.85,
+              }}
+            >
+              {symbol}
+            </div>
+          )
+        })}
+      </div>
+    </>
+  )
+}
+
+// ================== COMPONENT CHÍNH ==================
 
 export default function HomePage() {
   const now = new Date()
@@ -306,7 +462,37 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState<Date>(now)
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([])
 
-  // Build calendar data
+  // Filter ngày lễ
+  const [showSolarHolidays, setShowSolarHolidays] = useState(true)
+  const [showLunarHolidays, setShowLunarHolidays] = useState(true)
+  const [showOnlyOff, setShowOnlyOff] = useState(false)
+
+  // Ghi chú trong ngày
+  const [dailyNote, setDailyNote] = useState("")
+  const [noteSaved, setNoteSaved] = useState(false)
+
+  // Ngày quan trọng cá nhân
+  const [personalEvents, setPersonalEvents] = useState<PersonalEvent[]>([])
+  const [newEventTitle, setNewEventTitle] = useState("")
+  const [newEventDay, setNewEventDay] = useState("")
+  const [newEventMonth, setNewEventMonth] = useState("")
+  const [newEventYear, setNewEventYear] = useState("")
+
+  // Tra cứu nhanh
+  const [searchMode, setSearchMode] = useState<"solar" | "lunar">("solar")
+  const [searchSolarDay, setSearchSolarDay] = useState("")
+  const [searchSolarMonth, setSearchSolarMonth] = useState("")
+  const [searchSolarYear, setSearchSolarYear] = useState("")
+  const [searchLunarDay, setSearchLunarDay] = useState("")
+  const [searchLunarMonth, setSearchLunarMonth] = useState("")
+
+  // Tiết khí trong năm
+  const [yearSolarTerms, setYearSolarTerms] = useState<SolarTermInYear[]>([])
+
+  // Hiệu ứng theo mùa
+  const [seasonalEffect, setSeasonalEffect] = useState<SeasonalEffect>("none")
+
+  // ====== BUILD CALENDAR DATA ======
   useEffect(() => {
     const days: CalendarDay[] = []
     const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate()
@@ -316,7 +502,7 @@ export default function HomePage() {
 
       const lunarInfo = getLunarDate(solarDate)
       const today = isToday(day, selectedMonth, selectedYear)
-      const canChi = lunarInfo.dayName // Can Chi NGÀY chuẩn
+      const canChi = lunarInfo.dayName
       const holidays: HolidayInfo[] = []
 
       SOLAR_HOLIDAYS.forEach((h) => {
@@ -348,7 +534,15 @@ export default function HomePage() {
     setCalendarData(days)
   }, [selectedYear, selectedMonth])
 
-  // Info ngày đang chọn
+  // ====== HIỆU ỨNG THEO MÙA (tính theo hôm nay) ======
+  useEffect(() => {
+    const today = new Date()
+    const lunarToday = getLunarDate(today)
+    const eff = getSeasonalEffectForDate(today, lunarToday)
+    setSeasonalEffect(eff)
+  }, [])
+
+  // ====== THÔNG TIN NGÀY ĐANG CHỌN ======
   const selectedDayData: CalendarDay | null = (() => {
     if (!calendarData.length) return null
     if (
@@ -360,7 +554,6 @@ export default function HomePage() {
     return null
   })()
 
-  // Thông tin âm lịch (Can Chi tháng/năm, tiết khí, giờ hoàng đạo)
   const selectedLunarInfo = selectedDayData
     ? getLunarDate(selectedDayData.date)
     : null
@@ -373,7 +566,6 @@ export default function HomePage() {
 
   const zodiacYearName = selectedLunarInfo?.yearName || "..."
   const zodiacInfo = getZodiacFromYearName(zodiacYearName)
-
   const luckyHours = selectedLunarInfo?.luckyHours ?? []
 
   const monthNames = [
@@ -408,7 +600,146 @@ export default function HomePage() {
       ? PROVERBS[getDayOfYear(selectedDate) % PROVERBS.length]
       : ""
 
-  // Điều khiển
+  const isTetLike =
+    !!selectedLunarInfo &&
+    (selectedLunarInfo.month === 12 || selectedLunarInfo.month === 1)
+
+  const tetGreeting =
+    isTetLike && TET_GREETINGS.length > 0
+      ? TET_GREETINGS[getDayOfYear(selectedDate) % TET_GREETINGS.length]
+      : null
+
+  // ====== GHI CHÚ TRONG NGÀY – localStorage theo ngày ======
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const key = `dailyNote-${selectedDate.toISOString().slice(0, 10)}`
+    const stored = window.localStorage.getItem(key)
+    setDailyNote(stored || "")
+    setNoteSaved(false)
+  }, [selectedDate])
+
+  const handleSaveNote = () => {
+    if (typeof window === "undefined") return
+    const key = `dailyNote-${selectedDate.toISOString().slice(0, 10)}`
+    window.localStorage.setItem(key, dailyNote)
+    setNoteSaved(true)
+    setTimeout(() => setNoteSaved(false), 1500)
+  }
+
+  // ====== NGÀY QUAN TRỌNG CÁ NHÂN – localStorage ======
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      const raw = window.localStorage.getItem("personalEvents")
+      if (raw) {
+        const parsed = JSON.parse(raw) as PersonalEvent[]
+        setPersonalEvents(parsed)
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    window.localStorage.setItem(
+      "personalEvents",
+      JSON.stringify(personalEvents)
+    )
+  }, [personalEvents])
+
+  const handleAddPersonalEvent = () => {
+    const d = parseInt(newEventDay)
+    const m = parseInt(newEventMonth)
+    const y = newEventYear ? parseInt(newEventYear) : selectedYear
+
+    if (!newEventTitle.trim() || !d || !m || !y) return
+
+    const ev: PersonalEvent = {
+      id: `${y}-${m}-${d}-${Date.now()}`,
+      title: newEventTitle.trim(),
+      date: { day: d, month: m, year: y },
+    }
+
+    setPersonalEvents((prev) => [...prev, ev])
+    setNewEventTitle("")
+    setNewEventDay("")
+    setNewEventMonth("")
+    setNewEventYear("")
+  }
+
+  const handleDeletePersonalEvent = (id: string) => {
+    setPersonalEvents((prev) => prev.filter((e) => e.id !== id))
+  }
+
+  // ====== TIẾT KHÍ TRONG NĂM ======
+  useEffect(() => {
+    const results: SolarTermInYear[] = []
+    let lastName = ""
+    const d = new Date(selectedYear, 0, 1)
+    let safety = 400
+
+    while (d.getFullYear() === selectedYear && safety > 0) {
+      const lunar = getLunarDate(d)
+      if (lunar.solarTerm && lunar.solarTerm !== lastName) {
+        results.push({ name: lunar.solarTerm, date: new Date(d) })
+        lastName = lunar.solarTerm
+      }
+      d.setDate(d.getDate() + 1)
+      safety--
+    }
+
+    setYearSolarTerms(results)
+  }, [selectedYear])
+
+  // ====== TRA CỨU NHANH ======
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (searchMode === "solar") {
+      const d = parseInt(searchSolarDay)
+      const m = parseInt(searchSolarMonth)
+      const y = searchSolarYear ? parseInt(searchSolarYear) : selectedYear
+      if (!d || !m || !y) return
+
+      const date = new Date(y, m - 1, d)
+      if (isNaN(date.getTime())) return
+      setSelectedYear(y)
+      setSelectedMonth(m)
+      setSelectedDate(date)
+      return
+    }
+
+    // Tìm theo ÂM lịch trong phạm vi 1 năm dương
+    const ld = parseInt(searchLunarDay)
+    const lm = parseInt(searchLunarMonth)
+    const y = selectedYear
+    if (!ld || !lm) return
+
+    const start = new Date(y, 0, 1)
+    const end = new Date(y, 11, 31)
+    let found: Date | null = null
+
+    for (
+      let d = new Date(start.getTime());
+      d.getTime() <= end.getTime();
+      d.setDate(d.getDate() + 1)
+    ) {
+      const lunar = getLunarDate(d)
+      if (lunar.day === ld && lunar.month === lm) {
+        found = new Date(d)
+        break
+      }
+    }
+
+    if (found) {
+      setSelectedYear(found.getFullYear())
+      setSelectedMonth(found.getMonth() + 1)
+      setSelectedDate(found)
+    }
+  }
+
+  // ====== ĐIỀU KHIỂN NGÀY / THÁNG / NĂM ======
   const goToday = () => {
     const t = new Date()
     setSelectedYear(t.getFullYear())
@@ -461,404 +792,766 @@ export default function HomePage() {
     setSelectedDate(newDate)
   }
 
+  // ====== GỢI Ý TRONG NGÀY ======
+  const dailySuggestions =
+    selectedLunarInfo
+      ? getDailySuggestions(
+          selectedLunarInfo.day,
+          selectedLunarInfo.month,
+          selectedLunarInfo.solarTerm
+        )
+      : []
+
+  // ================== UI ==================
+
   return (
-    <main className="min-h-screen bg-slate-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <Card className="overflow-hidden shadow-xl border-0">
-          <div className="grid md:grid-cols-[1.1fr,1.3fr] min-h-[520px]">
-            {/* LEFT PANEL */}
-            <div className="relative bg-gradient-to-b from-sky-50 to-white border-r">
-              <div className="px-8 pt-6 pb-6 flex flex-col h-full">
-                {/* Header THÁNG / NĂM / THỨ */}
-                <div className="flex items-center justify-between border-b pb-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-sky-700">
-                      {monthNames[selectedDate.getMonth()]}
-                    </span>
-                    <span className="text-2xl font-bold text-slate-900">
-                      {selectedDate.getFullYear()}
-                    </span>
+    <>
+      <SeasonalEffects effect={seasonalEffect} />
+      <main className="relative min-h-screen bg-gradient-to-b from-red-50 via-amber-50/70 to-rose-50 py-8 z-10">
+        <div className="max-w-6xl mx-auto px-4">
+          <Card className="overflow-hidden shadow-xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+            <div className="grid md:grid-cols-[1.1fr,1.4fr] min-h-[540px]">
+              {/* LEFT PANEL */}
+              <div className="relative bg-gradient-to-b from-red-50/80 via-amber-50 to-white border-r">
+                <div className="px-8 pt-6 pb-6 flex flex-col h-full">
+                  {/* Header THÁNG / NĂM / THỨ */}
+                  <div className="flex items-center justify-between border-b pb-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-red-700">
+                        {monthNames[selectedDate.getMonth()]}
+                      </span>
+                      <span className="text-2xl font-bold text-slate-900 drop-shadow-sm">
+                        {selectedDate.getFullYear()}
+                      </span>
+                    </div>
+                    <div className="text-sm font-semibold text-red-800">
+                      {weekdayFull[dow]}
+                    </div>
                   </div>
-                  <div className="text-sm font-semibold text-sky-800">
-                    {weekdayFull[dow]}
+
+                  {/* Nút HÔM NAY + Tuần / Ngày trong năm */}
+                  <div className="flex items-center justify-between mb-4">
+                    <Button
+                      size="sm"
+                      variant={
+                        isToday(
+                          selectedDate.getDate(),
+                          selectedDate.getMonth() + 1,
+                          selectedDate.getFullYear()
+                        )
+                          ? "default"
+                          : "outline"
+                      }
+                      className="rounded-full px-4 text-xs font-semibold shadow-sm hover:shadow-md transition-all"
+                      onClick={goToday}
+                    >
+                      HÔM NAY
+                    </Button>
+                    <div className="text-right text-xs text-slate-500 space-y-0.5">
+                      <div>Tuần {weekNumber}</div>
+                      <div>Ngày thứ {dayOfYear} trong năm</div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Nút HÔM NAY + Tuần / Ngày trong năm */}
-                <div className="flex items-center justify-between mb-4">
-                  <Button
-                    size="sm"
-                    variant={
-                      isToday(
-                        selectedDate.getDate(),
-                        selectedDate.getMonth() + 1,
-                        selectedDate.getFullYear()
-                      )
-                        ? "default"
-                        : "outline"
-                    }
-                    className="rounded-full px-4 text-xs font-semibold"
-                    onClick={goToday}
-                  >
-                    HÔM NAY
-                  </Button>
-                  <div className="text-right text-xs text-slate-500 space-y-0.5">
-                    <div>Tuần {weekNumber}</div>
-                    <div>Ngày thứ {dayOfYear} trong năm</div>
+                  {/* Số ngày to + mũi tên */}
+                  <div className="flex items-center justify-between mb-4">
+                    <button
+                      onClick={goPrevDay}
+                      className="text-slate-400 hover:text-slate-700 transition-transform hover:-translate-x-0.5"
+                    >
+                      ‹
+                    </button>
+                    <div className="text-7xl font-bold text-slate-900 leading-none drop-shadow-sm">
+                      {pad2(selectedDate.getDate())}
+                    </div>
+                    <button
+                      onClick={goNextDay}
+                      className="text-slate-400 hover:text-slate-700 transition-transform hover:translate-x-0.5"
+                    >
+                      ›
+                    </button>
                   </div>
-                </div>
 
-                {/* Số ngày to + mũi tên */}
-                <div className="flex items-center justify-between mb-4">
-                  <button
-                    onClick={goPrevDay}
-                    className="text-slate-400 hover:text-slate-700 transition"
-                  >
-                    ‹
-                  </button>
-                  <div className="text-7xl font-bold text-slate-900 leading-none">
-                    {pad2(selectedDate.getDate())}
+                  {/* Ca dao / chúc Tết */}
+                  <div className="mt-2 mb-2 border-l-4 border-amber-300 pl-3 text-xs text-slate-700 italic animate-[fadeIn_0.5s_ease-out]">
+                    “{proverb}”
+                    <div className="mt-1 text-[10px] not-italic text-slate-400">
+                      Ca dao, tục ngữ Việt Nam
+                    </div>
                   </div>
-                  <button
-                    onClick={goNextDay}
-                    className="text-slate-400 hover:text-slate-700 transition"
-                  >
-                    ›
-                  </button>
-                </div>
 
-                {/* Ca dao / tục ngữ */}
-                <div className="mt-2 mb-4 border-l-4 border-slate-300 pl-3 text-xs text-slate-600 italic">
-                  “{proverb}”
-                  <div className="mt-1 text-[10px] not-italic text-slate-400">
-                    Ca dao, tục ngữ Việt Nam
-                  </div>
-                </div>
-
-                {/* Tiết khí */}
-                <div className="mb-3 text-xs text-slate-600">
-                  <span className="font-semibold">Tiết khí:</span>{" "}
-                  <span className="text-sky-700">
-                    {selectedLunarInfo?.solarTerm || "Không có dữ liệu tiết khí"}
-                  </span>
-                </div>
-
-                {/* THÔNG TIN CAN CHI + GIỜ HOÀNG ĐẠO */}
-                <div className="space-y-2 text-xs text-slate-700 mb-3">
-                  {selectedDayData && selectedLunarInfo ? (
-                    <>
-                      <div>
-                        Ngày{" "}
-                        <span className="font-semibold">
-                          {selectedLunarInfo.dayName}
-                        </span>
-                      </div>
-                      <div>
-                        Tháng{" "}
-                        <span className="font-semibold">
-                          {selectedLunarInfo.monthName}
-                        </span>
-                      </div>
-                      <div>
-                        Năm{" "}
-                        <span className="font-semibold">
-                          {selectedLunarInfo.yearName}
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-[11px] text-slate-400">
-                      Đang tải thông tin Can Chi...
+                  {tetGreeting && (
+                    <div className="mb-3 text-xs bg-red-50 border-l-4 border-red-400 pl-3 pr-2 py-1 text-red-700 rounded-r-md shadow-sm animate-[fadeIn_0.5s_ease-out]">
+                      {tetGreeting}
                     </div>
                   )}
 
-                  {/* Giờ hoàng đạo */}
-                  <div className="pt-1">
-                    <div className="font-semibold mb-1">
-                      Giờ hoàng đạo hôm nay:
-                    </div>
-                    {luckyHours.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {luckyHours.map((h) => (
-                          <span
-                            key={h}
-                            className="px-2 py-0.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px]"
-                          >
-                            {h}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-[11px] text-slate-400">
-                        Thư viện chưa trả dữ liệu giờ hoàng đạo.
-                      </div>
-                    )}
+                  {/* Tiết khí */}
+                  <div className="mb-2 text-xs text-slate-600">
+                    <span className="font-semibold">Tiết khí:</span>{" "}
+                    <span className="text-red-700">
+                      {selectedLunarInfo?.solarTerm || "Không có dữ liệu tiết khí"}
+                    </span>
                   </div>
-                </div>
 
-                {/* Ô thông tin âm lịch + con giáp */}
-                <div className="mt-auto pt-4 border-t flex gap-6 items-end">
-                  {/* Cột trái: Thông tin âm lịch + lễ */}
-                  <div className="text-xs text-slate-700 space-y-1">
-                    {selectedDayData ? (
+                  {/* THÔNG TIN CAN CHI + GIỜ HOÀNG ĐẠO */}
+                  <div className="space-y-2 text-xs text-slate-700 mb-3">
+                    {selectedDayData && selectedLunarInfo ? (
                       <>
-                        <div>
-                          Âm lịch:{" "}
+                        <div className="animate-[fadeIn_0.4s_ease-out]">
+                          Ngày{" "}
                           <span className="font-semibold">
-                            {pad2(selectedDayData.lunar.day)}/
-                            {pad2(selectedDayData.lunar.month)}
-                            {lunarMonthType && `(${lunarMonthType})`}/
-                            {selectedDayData.lunar.year}
+                            {selectedLunarInfo.dayName}
                           </span>
                         </div>
-                        {lunarMonthType && lunarMonthLength && (
-                          <div className="text-[11px] text-slate-500">
-                            Tháng {pad2(selectedDayData.lunar.month)} có{" "}
-                            {lunarMonthLength} ngày –{" "}
-                            {lunarMonthType === "Đ" ? "tháng đủ" : "tháng thiếu"}
-                          </div>
-                        )}
-                        {selectedDayData.holidays.length > 0 ? (
-                          <div className="pt-1">
-                            {selectedDayData.holidays.map((h, idx) => (
-                              <div key={idx} className="text-[11px]">
-                                <span className="font-semibold text-emerald-700">
-                                  {h.name}
-                                </span>{" "}
-                                –{" "}
-                                <span>
-                                  {h.isOff
-                                    ? "Có nghỉ làm/học"
-                                    : "Không nghỉ chính thức"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-[11px] text-slate-400">
-                            Không trùng ngày lễ trong danh sách.
-                          </div>
-                        )}
-                        {/* Năm con giáp + icon */}
-                        <div className="pt-2 flex items-center gap-2">
-                          <span className="text-[11px] text-slate-500">
-                            Năm con giáp:
+                        <div className="animate-[fadeIn_0.5s_ease-out]">
+                          Tháng{" "}
+                          <span className="font-semibold">
+                            {selectedLunarInfo.monthName}
                           </span>
-                          <span className="font-semibold text-sky-700">
-                            {zodiacYearName}
+                        </div>
+                        <div className="animate-[fadeIn_0.6s_ease-out]">
+                          Năm{" "}
+                          <span className="font-semibold">
+                            {selectedLunarInfo.yearName}
                           </span>
-                          {zodiacInfo && (
-                            <span className="ml-2 flex flex-col items-center">
-                              <span className="text-2xl animate-bounce">
-                                {zodiacInfo.emoji}
-                              </span>
-                              <span className="text-[10px] text-slate-500 mt-0.5">
-                                {zodiacInfo.branch}
-                              </span>
-                            </span>
-                          )}
                         </div>
                       </>
                     ) : (
                       <div className="text-[11px] text-slate-400">
-                        Đang tải thông tin ngày...
+                        Đang tải thông tin Can Chi...
+                      </div>
+                    )}
+
+                    {/* Giờ hoàng đạo */}
+                    <div className="pt-1">
+                      <div className="font-semibold mb-1">
+                        Giờ hoàng đạo hôm nay:
+                      </div>
+                      {luckyHours.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {luckyHours.map((h) => (
+                            <span
+                              key={h}
+                              className="px-2 py-0.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] shadow-sm"
+                            >
+                              {h}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-[11px] text-slate-400">
+                          Thư viện chưa trả dữ liệu giờ hoàng đạo.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* GỢI Ý HÔM NAY */}
+                  <div className="mb-3 text-xs text-slate-700">
+                    <div className="font-semibold mb-1">
+                      Gợi ý cho hôm nay
+                    </div>
+                    {dailySuggestions.length > 0 ? (
+                      <ul className="list-disc pl-4 space-y-0.5">
+                        {dailySuggestions.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="text-[11px] text-slate-400">
+                        Chưa có gợi ý cho ngày này.
                       </div>
                     )}
                   </div>
 
-                  {/* Cột phải: Số âm lịch to */}
-                  <div className="ml-auto text-right">
-                    <div className="text-[11px] text-slate-500 mb-1">
-                      Ngày âm
-                    </div>
-                    <div className="text-4xl font-bold text-sky-700 leading-none">
-                      {selectedDayData ? pad2(selectedDayData.lunar.day) : "--"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT PANEL – LỊCH THÁNG */}
-            <div className="bg-white">
-              <div className="px-6 pt-4 pb-6 flex flex-col h-full">
-                {/* Lịch tháng */}
-                <div className="mb-4">
-                  <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold text-slate-400 mb-2">
-                    {weekdayShortHeader.map((d) => (
-                      <div key={d} className="py-1">
-                        {d}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-7 gap-2">
-                    {cells.map((day, idx) => {
-                      if (!day) {
-                        return (
-                          <div
-                            key={idx}
-                            className="h-[60px] rounded-xl bg-slate-50"
-                          />
-                        )
-                      }
-
-                      const data = calendarData.find((d) => d.solar === day)
-                      if (!data) {
-                        return (
-                          <div
-                            key={idx}
-                            className="h-[60px] rounded-xl border bg-white flex items-center justify-center text-sm text-slate-400"
-                          >
-                            {day}
-                          </div>
-                        )
-                      }
-
-                      const isSelected =
-                        data.date.toDateString() ===
-                        selectedDate.toDateString()
-                      const inTetRange = isTetHolidayRange(data.lunar)
-                      const hasHoliday = data.holidays.length > 0
-                      const isTodayCell = data.isToday
-
-                      let cellLunarMonthType: "Đ" | "T" | null = null
-                      if (data.lunar.day === 1) {
-                        const len = getLunarMonthLengthForDate(data.date)
-                        cellLunarMonthType =
-                          len === 30 ? "Đ" : len === 29 ? "T" : null
-                      }
-
-                      let cellClass =
-                        "h-[60px] rounded-xl border text-sm flex flex-col items-center justify-center cursor-pointer transition bg-white text-slate-800 hover:bg-slate-50"
-
-                      if (inTetRange) {
-                        cellClass =
-                          "h-[60px] rounded-xl border-2 border-red-500 bg-gradient-to-br from-red-500 to-amber-400 text-white shadow-md flex flex-col items-center justify-center cursor-pointer"
-                      }
-
-                      if (!inTetRange && hasHoliday) {
-                        const anyOff = data.holidays.some((h) => h.isOff)
-                        const hasAm = data.holidays.some(
-                          (h) => h.type === "am"
-                        )
-                        if (anyOff && hasAm) {
-                          cellClass =
-                            "h-[60px] rounded-xl border-2 border-amber-500 bg-gradient-to-br from-amber-100 to-emerald-100 text-emerald-900 shadow-sm flex flex-col items-center justify-center cursor-pointer"
-                        } else if (anyOff) {
-                          cellClass =
-                            "h-[60px] rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 flex flex-col items-center justify-center cursor-pointer"
-                        } else if (hasAm) {
-                          cellClass =
-                            "h-[60px] rounded-xl border border-amber-400 bg-amber-50 text-amber-900 flex flex-col items-center justify-center cursor-pointer"
-                        } else {
-                          cellClass =
-                            "h-[60px] rounded-xl border border-sky-400 bg-sky-50 text-sky-900 flex flex-col items-center justify-center cursor-pointer"
-                        }
-                      }
-
-                      if (isSelected) {
-                        cellClass =
-                          "h-[60px] rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white flex flex-col items-center justify-center cursor-pointer shadow-md"
-                      }
-
-                      if (
-                        isTodayCell &&
-                        !isSelected &&
-                        !inTetRange &&
-                        !hasHoliday
-                      ) {
-                        cellClass =
-                          "h-[60px] rounded-xl border-2 border-sky-500 bg-sky-50 text-sky-900 flex flex-col items-center justify-center cursor-pointer"
-                      }
-
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => handleDayClick(day)}
-                          className={cellClass}
-                        >
-                          <div className="text-sm font-semibold leading-none">
-                            {day}
-                          </div>
-                          <div className="text-[10px] mt-1 opacity-80 flex items-center gap-0.5 justify-center">
-                            <span>
-                              {pad2(data.lunar.day)}/{pad2(data.lunar.month)}
-                            </span>
-                            {cellLunarMonthType && (
-                              <span className="text-[9px] font-semibold">
-                                {cellLunarMonthType}
+                  {/* Ô thông tin âm lịch + con giáp + ghi chú */}
+                  <div className="mt-auto pt-4 border-t flex flex-col gap-3">
+                    <div className="flex gap-6 items-end">
+                      {/* Cột trái: Thông tin âm lịch + lễ */}
+                      <div className="text-xs text-slate-700 space-y-1">
+                        {selectedDayData ? (
+                          <>
+                            <div>
+                              Âm lịch:{" "}
+                              <span className="font-semibold">
+                                {pad2(selectedDayData.lunar.day)}/
+                                {pad2(selectedDayData.lunar.month)}
+                                {lunarMonthType && `(${lunarMonthType})`}/
+                                {selectedDayData.lunar.year}
                               </span>
+                            </div>
+                            {lunarMonthType && lunarMonthLength && (
+                              <div className="text-[11px] text-slate-500">
+                                Tháng {pad2(selectedDayData.lunar.month)} có{" "}
+                                {lunarMonthLength} ngày –{" "}
+                                {lunarMonthType === "Đ"
+                                  ? "tháng đủ"
+                                  : "tháng thiếu"}
+                              </div>
                             )}
+
+                            {/* Lễ (theo filter hiện tại) */}
+                            {(() => {
+                              const effective =
+                                selectedDayData.holidays.filter((h) => {
+                                  if (!showSolarHolidays && h.type === "duong")
+                                    return false
+                                  if (!showLunarHolidays && h.type === "am")
+                                    return false
+                                  if (showOnlyOff && !h.isOff) return false
+                                  return true
+                                })
+
+                              if (effective.length === 0) {
+                                return (
+                                  <div className="text-[11px] text-slate-400">
+                                    Không trùng ngày lễ trong danh sách (dưới
+                                    bộ lọc hiện tại).
+                                  </div>
+                                )
+                              }
+
+                              return (
+                                <div className="pt-1 space-y-0.5">
+                                  {effective.map((h, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="text-[11px]"
+                                    >
+                                      <span className="font-semibold text-emerald-700">
+                                        {h.name}
+                                      </span>{" "}
+                                      –{" "}
+                                      <span>
+                                        {h.isOff
+                                          ? "Có nghỉ làm/học"
+                                          : "Không nghỉ chính thức"}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )
+                            })()}
+                          </>
+                        ) : (
+                          <div className="text-[11px] text-slate-400">
+                            Đang tải thông tin ngày...
                           </div>
-                          <div className="text-[9px] mt-0.5 opacity-80">
-                            {data.canChi}
-                          </div>
+                        )}
+
+                        {/* Năm con giáp + ảnh */}
+                        <div className="pt-2 flex items-center gap-2">
+                          <span className="text-[11px] text-slate-500">
+                            Năm con giáp:
+                          </span>
+                          <span className="font-semibold text-red-700">
+                            {zodiacYearName}
+                          </span>
+                          {zodiacInfo && (
+                            <div className="ml-2 flex flex-col items-center">
+                              <img
+                                src={zodiacInfo.image}
+                                alt={zodiacInfo.branch}
+                                className="w-12 h-12 animate-bounce drop-shadow-md"
+                              />
+                              <span className="text-[10px] text-red-700 mt-1">
+                                {zodiacInfo.branch}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Cột phải: Số âm lịch to */}
+                      <div className="ml-auto text-right">
+                        <div className="text-[11px] text-slate-500 mb-1">
+                          Ngày âm
+                        </div>
+                        <div className="text-4xl font-bold text-red-700 leading-none drop-shadow-sm">
+                          {selectedDayData
+                            ? pad2(selectedDayData.lunar.day)
+                            : "--"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ghi chú trong ngày */}
+                    <div className="mt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-semibold text-slate-700">
+                          Ghi chú trong ngày
+                        </span>
+                        {noteSaved && (
+                          <span className="text-[10px] text-emerald-600">
+                            Đã lưu ✔
+                          </span>
+                        )}
+                      </div>
+                      <textarea
+                        className="w-full min-h-[60px] text-xs border rounded-md px-2 py-1 text-slate-700 resize-none focus:outline-none focus:ring-1 focus:ring-red-400"
+                        value={dailyNote}
+                        onChange={(e) => setDailyNote(e.target.value)}
+                        placeholder="Ghi lại việc quan trọng, việc cần làm hoặc cảm xúc trong ngày..."
+                      />
+                      <div className="flex justify-end mt-1">
+                        <button
+                          onClick={handleSaveNote}
+                          className="text-[11px] px-3 py-1 rounded-full bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md transition-all"
+                        >
+                          Lưu ghi chú
                         </button>
-                      )
-                    })}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* CHỌN THÁNG / NĂM */}
-                <div className="mt-auto pt-3 border-t flex flex-wrap gap-4 items-center justify-between">
-                  <div className="flex flex-wrap items-center gap-4">
-                    {/* Tháng */}
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-500">THÁNG</span>
-                      <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
-                        <button
-                          onClick={() => shiftMonth(-1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
-                        >
-                          ‹
-                        </button>
-                        <span className="px-3 text-sm font-semibold">
-                          {pad2(selectedMonth)}
-                        </span>
-                        <button
-                          onClick={() => shiftMonth(1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
-                        >
-                          ›
-                        </button>
+              {/* RIGHT PANEL – LỊCH THÁNG + TOOL */}
+              <div className="bg-white">
+                <div className="px-6 pt-4 pb-6 flex flex-col h-full gap-3">
+                  {/* BỘ LỌC NGÀY LỄ + TRA CỨU NHANH */}
+                  <div className="flex flex-col gap-3 mb-2">
+                    <div className="flex flex-wrap gap-3 items-center justify-between">
+                      <div className="flex flex-wrap gap-3 items-center text-[11px] text-slate-600">
+                        <label className="inline-flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showSolarHolidays}
+                            onChange={(e) =>
+                              setShowSolarHolidays(e.target.checked)
+                            }
+                          />
+                          <span>Lễ dương lịch</span>
+                        </label>
+                        <label className="inline-flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showLunarHolidays}
+                            onChange={(e) =>
+                              setShowLunarHolidays(e.target.checked)
+                            }
+                          />
+                          <span>Lễ âm lịch</span>
+                        </label>
+                        <label className="inline-flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={showOnlyOff}
+                            onChange={(e) =>
+                              setShowOnlyOff(e.target.checked)
+                            }
+                          />
+                          <span>Chỉ ngày có nghỉ</span>
+                        </label>
                       </div>
-                    </div>
 
-                    {/* Năm */}
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-500">NĂM</span>
-                      <div className="inline-flex items-center rounded-full border bg-slate-50 px-1">
-                        <button
-                          onClick={() => shiftYear(-1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                      {/* Tra cứu nhanh */}
+                      <form
+                        onSubmit={handleSearchSubmit}
+                        className="flex flex-wrap gap-2 items-center text-[11px] text-slate-600"
+                      >
+                        <select
+                          value={searchMode}
+                          onChange={(e) =>
+                            setSearchMode(
+                              e.target.value as "solar" | "lunar"
+                            )
+                          }
+                          className="border rounded px-1 py-0.5 text-[11px]"
                         >
-                          ‹
-                        </button>
-                        <span className="px-3 text-sm font-semibold">
-                          {selectedYear}
-                        </span>
+                          <option value="solar">Dương lịch</option>
+                          <option value="lunar">Âm lịch</option>
+                        </select>
+                        {searchMode === "solar" ? (
+                          <>
+                            <input
+                              type="number"
+                              placeholder="Ngày"
+                              value={searchSolarDay}
+                              onChange={(e) =>
+                                setSearchSolarDay(e.target.value)
+                              }
+                              className="w-12 border rounded px-1 py-0.5 text-[11px]"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Tháng"
+                              value={searchSolarMonth}
+                              onChange={(e) =>
+                                setSearchSolarMonth(e.target.value)
+                              }
+                              className="w-12 border rounded px-1 py-0.5 text-[11px]"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Năm"
+                              value={searchSolarYear}
+                              onChange={(e) =>
+                                setSearchSolarYear(e.target.value)
+                              }
+                              className="w-14 border rounded px-1 py-0.5 text-[11px]"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="number"
+                              placeholder="Ngày âm"
+                              value={searchLunarDay}
+                              onChange={(e) =>
+                                setSearchLunarDay(e.target.value)
+                              }
+                              className="w-16 border rounded px-1 py-0.5 text-[11px]"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Tháng âm"
+                              value={searchLunarMonth}
+                              onChange={(e) =>
+                                setSearchLunarMonth(e.target.value)
+                              }
+                              className="w-16 border rounded px-1 py-0.5 text-[11px]"
+                            />
+                            <span className="text-[10px] text-slate-400">
+                              (Năm: {selectedYear})
+                            </span>
+                          </>
+                        )}
                         <button
-                          onClick={() => shiftYear(1)}
-                          className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full text-sm"
+                          type="submit"
+                          className="px-2 py-0.5 rounded bg-red-600 text-white text-[11px] hover:bg-red-700 shadow-sm hover:shadow-md transition-all"
                         >
-                          ›
+                          Tới
                         </button>
-                      </div>
+                      </form>
                     </div>
                   </div>
 
-                  <div className="text-xs text-slate-500">
-                    Năm con giáp:{" "}
-                    <span className="font-semibold text-sky-700">
-                      {zodiacYearName}
-                    </span>
+                  {/* Lịch tháng */}
+                  <div className="mb-2 flex-1">
+                    <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold text-slate-400 mb-2">
+                      {weekdayShortHeader.map((d) => (
+                        <div key={d} className="py-1">
+                          {d}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-2">
+                      {cells.map((day, idx) => {
+                        if (!day) {
+                          return (
+                            <div
+                              key={idx}
+                              className="h-[60px] rounded-xl bg-amber-50/40"
+                            />
+                          )
+                        }
+
+                        const data = calendarData.find((d) => d.solar === day)
+                        if (!data) {
+                          return (
+                            <div
+                              key={idx}
+                              className="h-[60px] rounded-xl border bg-white flex items-center justify-center text-sm text-slate-400"
+                            >
+                              {day}
+                            </div>
+                          )
+                        }
+
+                        const isSelected =
+                          data.date.toDateString() ===
+                          selectedDate.toDateString()
+                        const inTetRange = isTetHolidayRange(data.lunar)
+
+                        const effectiveHolidays = data.holidays.filter((h) => {
+                          if (!showSolarHolidays && h.type === "duong")
+                            return false
+                          if (!showLunarHolidays && h.type === "am")
+                            return false
+                          if (showOnlyOff && !h.isOff) return false
+                          return true
+                        })
+
+                        const hasHoliday = effectiveHolidays.length > 0
+                        const isTodayCell = data.isToday
+
+                        let cellLunarMonthType: "Đ" | "T" | null = null
+                        if (data.lunar.day === 1) {
+                          const len = getLunarMonthLengthForDate(data.date)
+                          cellLunarMonthType =
+                            len === 30 ? "Đ" : len === 29 ? "T" : null
+                        }
+
+                        // Có sự kiện cá nhân?
+                        const hasPersonalEvent = personalEvents.some(
+                          (ev) =>
+                            ev.date.year === selectedYear &&
+                            ev.date.month === selectedMonth &&
+                            ev.date.day === day
+                        )
+
+                        const base =
+                          "relative h-[60px] rounded-xl text-sm flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:scale-[1.03]"
+
+                        let cellClass =
+                          base +
+                          " border bg-white text-slate-800 hover:bg-amber-50/60"
+
+                        if (inTetRange) {
+                          cellClass =
+                            base +
+                            " border-2 border-red-500 bg-gradient-to-br from-red-500 to-amber-400 text-white shadow-md"
+                        }
+
+                        if (!inTetRange && hasHoliday) {
+                          const anyOff = effectiveHolidays.some((h) => h.isOff)
+                          const hasAm = effectiveHolidays.some(
+                            (h) => h.type === "am"
+                          )
+                          if (anyOff && hasAm) {
+                            cellClass =
+                              base +
+                              " border-2 border-amber-500 bg-gradient-to-br from-amber-100 to-emerald-100 text-emerald-900 shadow-sm"
+                          } else if (anyOff) {
+                            cellClass =
+                              base +
+                              " border-2 border-emerald-500 bg-emerald-50 text-emerald-900"
+                          } else if (hasAm) {
+                            cellClass =
+                              base +
+                              " border border-amber-400 bg-amber-50 text-amber-900"
+                          } else {
+                            cellClass =
+                              base +
+                              " border border-amber-500 bg-amber-50 text-amber-900"
+                          }
+                        }
+
+                        if (isSelected) {
+                          cellClass =
+                            base +
+                            " border-2 border-emerald-600 bg-emerald-600 text-white shadow-md"
+                        }
+
+                        if (
+                          isTodayCell &&
+                          !isSelected &&
+                          !inTetRange &&
+                          !hasHoliday
+                        ) {
+                          cellClass =
+                            base +
+                            " border-2 border-red-500 bg-amber-50 text-red-900 shadow-sm ring-2 ring-amber-200/70"
+                        }
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleDayClick(day)}
+                            className={cellClass}
+                          >
+                            <div className="text-sm font-semibold leading-none">
+                              {day}
+                            </div>
+                            <div className="text-[10px] mt-1 opacity-80 flex items-center gap-0.5 justify-center">
+                              <span>
+                                {pad2(data.lunar.day)}/{pad2(data.lunar.month)}
+                              </span>
+                              {cellLunarMonthType && (
+                                <span className="text-[9px] font-semibold">
+                                  {cellLunarMonthType}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[9px] mt-0.5 opacity-80">
+                              {data.canChi}
+                            </div>
+                            {hasPersonalEvent && (
+                              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-fuchsia-500 shadow animate-pulse" />
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* CHỌN THÁNG / NĂM + TIẾT KHÍ & SỰ KIỆN CÁ NHÂN */}
+                  <div className="mt-auto pt-3 border-t flex flex-col gap-3">
+                    <div className="flex flex-wrap gap-4 items-center justify-between">
+                      <div className="flex flex-wrap items-center gap-4">
+                        {/* Tháng */}
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-slate-500">THÁNG</span>
+                          <div className="inline-flex items-center rounded-full border bg-amber-50 px-1 shadow-sm">
+                            <button
+                              onClick={() => shiftMonth(-1)}
+                              className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-amber-100 rounded-full text-sm transition"
+                            >
+                              ‹
+                            </button>
+                            <span className="px-3 text-sm font-semibold">
+                              {pad2(selectedMonth)}
+                            </span>
+                            <button
+                              onClick={() => shiftMonth(1)}
+                              className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-amber-100 rounded-full text-sm transition"
+                            >
+                              ›
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Năm */}
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-slate-500">NĂM</span>
+                          <div className="inline-flex items-center rounded-full border bg-amber-50 px-1 shadow-sm">
+                            <button
+                              onClick={() => shiftYear(-1)}
+                              className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-amber-100 rounded-full text-sm transition"
+                            >
+                              ‹
+                            </button>
+                            <span className="px-3 text-sm font-semibold">
+                              {selectedYear}
+                            </span>
+                            <button
+                              onClick={() => shiftYear(1)}
+                              className="px-2 py-1 text-slate-500 hover:text-slate-800 hover:bg-amber-100 rounded-full text-sm transition"
+                            >
+                              ›
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-slate-500">
+                        Năm con giáp:{" "}
+                        <span className="font-semibold text-red-700">
+                          {zodiacYearName}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Tiết khí trong năm + sự kiện cá nhân */}
+                    <div className="grid md:grid-cols-2 gap-3 mt-2">
+                      {/* Tiết khí trong năm */}
+                      <div className="border rounded-lg p-2 bg-amber-50/60">
+                        <div className="text-[11px] font-semibold text-slate-700 mb-1">
+                          Tiết khí năm {selectedYear}
+                        </div>
+                        <div className="max-h-24 overflow-auto pr-1 text-[11px] text-slate-600 space-y-0.5">
+                          {yearSolarTerms.length > 0 ? (
+                            yearSolarTerms.map((t) => (
+                              <div key={t.name + t.date.toISOString()}>
+                                <span className="font-semibold text-red-700">
+                                  {t.name}
+                                </span>{" "}
+                                –{" "}
+                                {t.date.toLocaleDateString("vi-VN")}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-[11px] text-slate-400">
+                              Chưa lấy được dữ liệu tiết khí cho năm này.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Sự kiện cá nhân */}
+                      <div className="border rounded-lg p-2 bg-amber-50/60">
+                        <div className="text-[11px] font-semibold text-slate-700 mb-1">
+                          Sự kiện cá nhân
+                        </div>
+                        <div className="flex flex-col gap-1 mb-1">
+                          <input
+                            type="text"
+                            placeholder="Tên sự kiện (ví dụ: Thi cuối kỳ)"
+                            value={newEventTitle}
+                            onChange={(e) =>
+                              setNewEventTitle(e.target.value)
+                            }
+                            className="w-full border rounded px-2 py-0.5 text-[11px]"
+                          />
+                          <div className="flex gap-1">
+                            <input
+                              type="number"
+                              placeholder="Ngày"
+                              value={newEventDay}
+                              onChange={(e) =>
+                                setNewEventDay(e.target.value)
+                              }
+                              className="w-12 border rounded px-2 py-0.5 text-[11px]"
+                            />
+                            <input
+                              type="number"
+                              placeholder="Tháng"
+                              value={newEventMonth}
+                              onChange={(e) =>
+                                setNewEventMonth(e.target.value)
+                              }
+                              className="w-12 border rounded px-2 py-0.5 text-[11px]"
+                            />
+                            <input
+                              type="number"
+                              placeholder={`${selectedYear}`}
+                              value={newEventYear}
+                              onChange={(e) =>
+                                setNewEventYear(e.target.value)
+                              }
+                              className="w-16 border rounded px-2 py-0.5 text-[11px]"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleAddPersonalEvent}
+                              className="px-2 py-0.5 rounded bg-red-600 text-white text-[11px] hover:bg-red-700 shadow-sm hover:shadow-md transition-all"
+                            >
+                              Thêm
+                            </button>
+                          </div>
+                        </div>
+                        <div className="max-h-20 overflow-auto pr-1 text-[11px] text-slate-600 space-y-0.5">
+                          {personalEvents.length > 0 ? (
+                            personalEvents.map((ev) => (
+                              <div
+                                key={ev.id}
+                                className="flex items-center justify-between gap-1"
+                              >
+                                <span>
+                                  {pad2(ev.date.day)}/{pad2(ev.date.month)}/
+                                  {ev.date.year}:{" "}
+                                  <span className="font-semibold">
+                                    {ev.title}
+                                  </span>
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDeletePersonalEvent(ev.id)
+                                  }
+                                  className="text-[10px] text-red-500 hover:underline"
+                                >
+                                  x
+                                </button>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-[11px] text-slate-400">
+                              Chưa có sự kiện nào. Hãy thêm sự kiện của bạn.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Card>
-      </div>
-    </main>
+          </Card>
+        </div>
+      </main>
+    </>
   )
 }
