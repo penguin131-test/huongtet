@@ -181,27 +181,33 @@ function CountdownBox({ value, unitKey }: CountdownBoxProps) {
   return (
     <div
       className="
-        relative overflow-hidden rounded-3xl
-        border border-amber-200 bg-[#fffdf7]
-        shadow-[0_10px_30px_rgba(148,63,37,0.25)]
-        flex flex-col items-center justify-center
-        min-h-[150px]
+        relative w-full aspect-square      /* 🔥 Ô vuông vức luôn */
+        overflow-hidden rounded-2xl
+        border border-amber-300
+        bg-white/90 shadow-[0_10px_30px_rgba(148,63,37,0.25)]
+        flex items-center justify-center
       "
     >
-      {/* FRAME TẾT – fit toàn bộ box, không dịch xuống nữa */}
+      {/* FRAME TẾT dạng vuông fit box */}
       <Image
         src={decor.frame}
         alt=""
         fill
-        className="pointer-events-none select-none object-contain"
+        className="
+          pointer-events-none select-none 
+          object-contain            /* 🔥 fit 100% ô vuông, không crop */
+          p-1                       /* 🔥 chừa viền để không chạm sát */
+        "
       />
 
-      {/* NỘI DUNG NẰM TRÊN FRAME */}
-      <div className="relative z-10 tet-countdown-font text-3xl sm:text-4xl font-bold text-red-800 drop-shadow-sm tracking-widest">
-        {displayValue}
-      </div>
-      <div className="relative z-10 mt-1 tet-countdown-font text-[16px] sm:text-[18px] text-red-900 drop-shadow-md">
-        {label}
+      {/* NỘI DUNG */}
+      <div className="absolute z-10 flex flex-col items-center justify-center">
+        <div className="tet-countdown-font text-3xl sm:text-4xl font-bold text-red-800 drop-shadow-md tracking-widest">
+          {displayValue}
+        </div>
+        <div className="tet-countdown-font text-[15px] sm:text-[18px] text-red-900 drop-shadow-md mt-1">
+          {label}
+        </div>
       </div>
     </div>
   )
