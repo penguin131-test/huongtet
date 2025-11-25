@@ -46,19 +46,6 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('[PWA] Service Worker registered'))
-                    .catch(err => console.log('[PWA] Service Worker registration failed:', err))
-                })
-              }
-            `,
-          }}
-        />
       </head>
 
       <body className="font-sans antialiased">
