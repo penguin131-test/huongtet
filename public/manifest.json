@@ -1,5 +1,5 @@
 {
-  "name": "Hóng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
+  "name": "Huơng Tết - Đếm ngược Tết & Tiện ích Tết Việt",
   "short_name": "Hóng Tết",
   "description": "Đếm ngược Tết Nguyên Đán, xem lịch âm dương chính xác, lịch nghỉ Tết, câu chúc, món ăn, văn khấn và tiện ích Tết Việt.",
   "start_url": "/",
@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://files.catbox.moe/kntzs7.png",
+      "src": "https://files.catbox.moe/l9j3zt.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://files.catbox.moe/kntzs7.png",
+      "src": "https://files.catbox.moe/l9j3zt.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
