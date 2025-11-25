@@ -169,7 +169,6 @@ function CountdownBox({ value, unitKey }: CountdownBoxProps) {
   const decor = COUNTDOWN_BOX_DECOR[unitKey]
   const displayValue = value.toString().padStart(2, "0")
 
-  // Label text cho từng box
   const label =
     unitKey === "days"
       ? "Ngày"
@@ -180,21 +179,27 @@ function CountdownBox({ value, unitKey }: CountdownBoxProps) {
       : "Giây"
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-white/95 border border-amber-200 shadow-[0_10px_30px_rgba(148,63,37,0.25)] px-3 py-3 flex flex-col items-center justify-center min-h-[130px]">
-      {/* KHUNG */}
+    <div
+      className="
+        relative overflow-hidden rounded-3xl
+        border border-amber-200 bg-[#fffdf7]
+        shadow-[0_10px_30px_rgba(148,63,37,0.25)]
+        flex flex-col items-center justify-center
+        min-h-[150px]
+      "
+    >
+      {/* FRAME TẾT – fit toàn bộ box, không dịch xuống nữa */}
       <Image
         src={decor.frame}
         alt=""
         fill
-        className="pointer-events-none select-none object-contain opacity-95 translate-y-4"
+        className="pointer-events-none select-none object-contain"
       />
 
-      {/* SỐ */}
+      {/* NỘI DUNG NẰM TRÊN FRAME */}
       <div className="relative z-10 tet-countdown-font text-3xl sm:text-4xl font-bold text-red-800 drop-shadow-sm tracking-widest">
         {displayValue}
       </div>
-
-      {/* LABEL */}
       <div className="relative z-10 mt-1 tet-countdown-font text-[16px] sm:text-[18px] text-red-900 drop-shadow-md">
         {label}
       </div>
