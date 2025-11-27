@@ -182,7 +182,7 @@
   font-style: normal;
 }
 
-/* Chỉ dùng cho countdown */
+/* dùng riêng cho countdown */
 .tet-countdown-font {
   font-family: "TetCountdown", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
