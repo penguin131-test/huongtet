@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ProfessionalFireworks } from "./professional-fireworks"
 
+// Danh sách ngày Tết dương lịch các năm
 const TET_SOLAR_DATES: Record<number, { month: number; day: number }> = {
   2025: { month: 1, day: 29 },
   2026: { month: 2, day: 17 },
@@ -13,202 +11,116 @@ const TET_SOLAR_DATES: Record<number, { month: number; day: number }> = {
   2029: { month: 2, day: 13 },
   2030: { month: 2, day: 2 },
   2031: { month: 1, day: 23 },
+  2032: { month: 2, day: 11 },
+  2033: { month: 1, day: 31 },
 }
 
-type CountdownState = {
-  days: number
-  hours: number
-  minutes: number
-  seconds: number
-  targetYear: number
-  targetDate: Date
-}
-
-function getUpcomingTet(from: Date): CountdownState {
-  const now = from
+function getUpcomingTet() {
+  const now = new Date()
   const year = now.getFullYear()
+  const tet = TET_SOLAR_DATES[year]
+    ? new Date(year, TET_SOLAR_DATES[year].month - 1, TET_SOLAR_DATES[year].day)
+    : new Date(year, 1, 1)
 
-  const getTetDateForYear = (y: number): Date => {
-    const info = TET_SOLAR_DATES[y]
-    if (!info) return new Date(y, 1, 1)
-    return new Date(y, info.month - 1, info.day)
+  if (now > tet) {
+    const nextYear = year + 1
+    const next = TET_SOLAR_DATES[nextYear]
+      ? new Date(nextYear, next.month - 1, next.day)
+      : new Date(nextYear, 1, 1)
+    return next
   }
 
-  let targetYear = year
-  let targetDate = getTetDateForYear(year)
-
-  if (now >= targetDate) {
-    targetYear = year + 1
-    targetDate = getTetDateForYear(targetYear)
-  }
-
-  const diffMs = Math.max(0, targetDate.getTime() - now.getTime())
-  const totalSeconds = Math.floor(diffMs / 1000)
-  const days = Math.floor(totalSeconds / 86400)
-  const hours = Math.floor((totalSeconds % 86400) / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
-
-  return { days, hours, minutes, seconds, targetYear, targetDate }
+  return tet
 }
 
-function useTetCountdown(): CountdownState {
-  const [state, setState] = useState<CountdownState>(() => getUpcomingTet(new Date()))
+export function CountdownHero() {
+  const target = getUpcomingTet()
+  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 })
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setState(getUpcomingTet(new Date()))
+      const now = new Date().getTime()
+      const diff = target.getTime() - now
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const s = Math.floor((diff % (1000 * 60)) / 1000)
+
+      setT({ d, h, m, s })
     }, 1000)
 
     return () => clearInterval(timer)
   }, [])
 
-  return state
-}
-
-// KHUNG TRANG TRÍ
-const COUNTDOWN_BOX_DECOR = {
-  days: {
-    frame: "/countdown/frame-day.png",
-  },
-  hours: {
-    frame: "/countdown/frame-hour.png",
-  },
-  minutes: {
-    frame: "/countdown/frame-minute.png",
-  },
-  seconds: {
-    frame: "/countdown/frame-second.png",
-  },
-} as const
-
-type CountdownBoxKey = keyof typeof COUNTDOWN_BOX_DECOR
-
-export function CountdownHero() {
-  const { days, hours, minutes, seconds, targetYear, targetDate } = useTetCountdown()
-  const [showFireworks, setShowFireworks] = useState(false)
-
-  useEffect(() => {
-    if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-      setShowFireworks(true)
-      const timer = setTimeout(() => setShowFireworks(false), 600000)
-      return () => clearTimeout(timer)
-    }
-  }, [days, hours, minutes, seconds])
-
   const formattedDate = useMemo(() => {
-    const d = String(targetDate.getDate()).padStart(2, "0")
-    const m = String(targetDate.getMonth() + 1).padStart(2, "0")
-    const y = targetDate.getFullYear()
+    const d = String(target.getDate()).padStart(2, "0")
+    const m = String(target.getMonth() + 1).padStart(2, "0")
+    const y = target.getFullYear()
     return `${d}/${m}/${y}`
-  }, [targetDate])
+  }, [target])
+
+  const FRAMES = [
+    { label: "Ngày", value: t.d, src: "/frames/frame-day.png" },
+    { label: "Giờ", value: t.h, src: "/frames/frame-hour.png" },
+    { label: "Phút", value: t.m, src: "/frames/frame-minute.png" },
+    { label: "Giây", value: t.s, src: "/frames/frame-second.png" },
+  ]
 
   return (
-    <>
-      <section className="border-b border-amber-300/70 bg-gradient-to-b from-[#fffaf0] via-[#ffeede] to-[#ffe0cc]">
-        <div className="mx-auto max-w-6xl flex flex-col gap-6 px-4 pb-8 pt-10 md:flex-row md:items-center md:justify-between">
-          {/* Text bên trái */}
-          <div className="max-w-xl space-y-3">
-            <p className="inline-block rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.16em] uppercase text-red-700">
-              Đếm ngược Tết Nguyên Đán
-            </p>
-            <h1 className="text-3xl font-extrabold tracking-tight text-red-900 sm:text-4xl md:text-5xl">
-              Còn bao nhiêu ngày nữa đến Tết {targetYear}?
-            </h1>
-            <p className="text-sm md:text-base text-red-800/80">
-              Tết Nguyên Đán năm nay vào ngày:{" "}
-              <span className="font-semibold text-red-900">{formattedDate}</span>.
-            </p>
+    <section className="bg-[#fff8f0] py-8">
+      <div className="mx-auto max-w-6xl px-4">
+        
+        {/* Heading */}
+        <h1 className="text-3xl md:text-4xl font-extrabold text-red-900 text-center mb-3">
+          Đếm ngược đến Tết Nguyên Đán {target.getFullYear()}
+        </h1>
 
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button
-                size="sm"
-                className="rounded-full bg-red-700 text-xs font-semibold text-amber-50 hover:bg-red-800"
-              >
-                Xem lịch &amp; sự kiện Tết
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="rounded-full border-amber-300 bg-white/70 text-xs font-medium text-red-800 hover:bg-amber-50"
-              >
-                Khám phá tiện ích Tết
-              </Button>
-            </div>
-          </div>
+        <p className="text-center text-red-800 mb-6">
+          Tết năm nay rơi vào ngày <b>{formattedDate}</b>
+        </p>
 
-          {/* COUNTDOWN bên phải */}
-          <div className="w-full max-w-md">
-            <div className="rounded-3xl border border-amber-300 bg-white/90 p-4 shadow-[0_10px_30px_rgba(148,63,37,0.16)]">
-              <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-red-700">
-                Thời gian còn lại
-              </p>
+        {/* GRID FRAME FULL IMAGE */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {FRAMES.map((box) => (
+            <div
+              key={box.label}
+              className="relative w-full"
+              style={{
+                aspectRatio: "1 / 1",
+              }}
+            >
+              {/* Frame tràn viền toàn bộ */}
+              <img
+                src={box.src}
+                alt={box.label}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
 
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <CountdownBox value={days} unitKey="days" />
-                <CountdownBox value={hours} unitKey="hours" />
-                <CountdownBox value={minutes} unitKey="minutes" />
-                <CountdownBox value={seconds} unitKey="seconds" />
+              {/* Nội dung nằm trên "lỗ" frame */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                
+                {/* Số */}
+                <p
+                  className="tet-countdown-font text-4xl sm:text-5xl md:text-6xl font-bold text-red-700"
+                  style={{ textShadow: "0 0 6px rgba(255, 255, 255, 0.9)" }}
+                >
+                  {String(box.value).padStart(2, "0")}
+                </p>
+
+                {/* Label */}
+                <p
+                  className="tet-countdown-font text-xl sm:text-2xl text-red-700 mt-1"
+                  style={{ textShadow: "0 0 4px rgba(255, 255, 255, 0.9)" }}
+                >
+                  {box.label}
+                </p>
+
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <ProfessionalFireworks isOpen={showFireworks} onClose={() => setShowFireworks(false)} />
-    </>
-  )
-}
-
-type CountdownBoxProps = {
-  value: number
-  unitKey: CountdownBoxKey
-}
-
-function CountdownBox({ value, unitKey }: CountdownBoxProps) {
-  const decor = COUNTDOWN_BOX_DECOR[unitKey]
-  const displayValue = value.toString().padStart(2, "0")
-
-  const label =
-    unitKey === "days"
-      ? "Ngày"
-      : unitKey === "hours"
-      ? "Giờ"
-      : unitKey === "minutes"
-      ? "Phút"
-      : "Giây"
-
-  return (
-    <div
-      className="
-        relative w-full aspect-square      /* 🔥 Ô vuông vức luôn */
-        overflow-hidden rounded-2xl
-        border border-amber-300
-        bg-white/90 shadow-[0_10px_30px_rgba(148,63,37,0.25)]
-        flex items-center justify-center
-      "
-    >
-      {/* FRAME TẾT dạng vuông fit box */}
-      <Image
-        src={decor.frame}
-        alt=""
-        fill
-        className="
-          pointer-events-none select-none 
-          object-contain            /* 🔥 fit 100% ô vuông, không crop */
-          p-1                       /* 🔥 chừa viền để không chạm sát */
-        "
-      />
-
-      {/* NỘI DUNG */}
-      <div className="absolute z-10 flex flex-col items-center justify-center">
-        <div className="tet-countdown-font text-3xl sm:text-4xl font-bold text-red-800 drop-shadow-md tracking-widest">
-          {displayValue}
-        </div>
-        <div className="tet-countdown-font text-[15px] sm:text-[18px] text-red-900 drop-shadow-md mt-1">
-          {label}
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
